@@ -1,0 +1,19 @@
+{
+  "data": [
+    {
+      "id": "previne",
+      "name": "Previne",
+      "description": "Acompanhamento dos indicadores do programa."
+    },
+    {
+      "id": "dental-care",
+      "name": "Dental Care",
+      "description": "Visao consolidada dos dados de saude bucal."
+    },
+    {
+      "id": "territorial-monitoring",
+      "name": "Territorial Monitoring",
+      "description": "Monitoramento por territorio e equipe."
+    }
+  ]
+}
