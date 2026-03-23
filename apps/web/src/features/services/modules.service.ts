@@ -1,12 +1,10 @@
 import { getJson } from "@/shared/api/http";
-import type { ModuleItem } from "@/features/types/module";
-
-interface ModulesResponse {
-  data: ModuleItem[];
-}
+import { modulesResponseSchema } from "@/features/types/module";
 
 export function fetchModules() {
-  return getJson<ModulesResponse>("/mock/modules.json");
+  return getJson("/mock/modules.json").then((payload) =>
+    modulesResponseSchema.parse(payload),
+  );
 }
 
 export function selectModule(moduleId: string) {

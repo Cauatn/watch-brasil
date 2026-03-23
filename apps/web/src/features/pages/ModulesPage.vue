@@ -5,10 +5,12 @@ import {
   useModulesQuery,
   useSelectModuleMutation,
 } from "@/features/composables/use-modules-query";
+import { useHelloQuery } from "@/features/composables/use-hello-query";
 import { useModulesStore } from "@/features/stores/modules.store";
 
 const modulesQuery = useModulesQuery();
 const selectModuleMutation = useSelectModuleMutation();
+const helloQuery = useHelloQuery();
 const modulesStore = useModulesStore();
 
 const modules = computed(() => modulesQuery.data.value ?? []);
@@ -24,6 +26,9 @@ function handleSelect(moduleId: string) {
       <h2 class="text-xl font-medium">Modules</h2>
       <p class="text-sm text-muted-foreground">
         Exemplo de feature com services, composables e store.
+      </p>
+      <p class="text-sm font-medium">
+        {{ helloQuery.data.value?.message ?? "Conectando no Fastify..." }}
       </p>
     </header>
 
