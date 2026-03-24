@@ -13,6 +13,7 @@ import { authRoute } from "./modules/auth/auth.route.js";
 import { commentsRoute } from "./modules/comments/comments.route.js";
 import { usersRoute } from "./modules/users/users.route.js";
 import { videosRoute } from "./modules/videos/videos.route.js";
+import { authGuardPlugin } from "./plugins/auth-guard.js";
 
 export const app = Fastify({ logger: true });
 
@@ -24,6 +25,7 @@ app.register(cors, { origin: true });
 app.register(jwt, {
   secret: process.env.JWT_SECRET ?? "watch-brasil-dev-secret",
 });
+app.register(authGuardPlugin);
 
 app.register(swagger, {
   openapi: {
