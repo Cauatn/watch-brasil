@@ -1,9 +1,9 @@
-import { app } from './app.js'
+import { app } from "./app.js";
 
-const port = Number(process.env.PORT ?? 3333)
-const host = process.env.HOST ?? '0.0.0.0'
+const port = Number(process.env.PORT ?? 3333);
+const host = process.env.HOST ?? "0.0.0.0";
 
 app.listen({ port, host }).catch((error) => {
-  app.log.error(error)
-  process.exit(1)
-})
+  app.log.error(error);
+  process.exit(1);
+});
