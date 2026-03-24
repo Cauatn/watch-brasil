@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import { useMutation, useQueryClient } from "@tanstack/vue-query"
-import { isAxiosError } from "axios"
-import type { SubmissionHandler } from "vee-validate"
-import { useRouter } from "vue-router"
-import { toast } from "vue-sonner"
-import { Button } from "@/components/ui/button"
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
+import { isAxiosError } from "axios";
+import type { SubmissionHandler } from "vee-validate";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { toast } from "vue-sonner";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -19,58 +20,61 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   createVideoValidationSchema,
   type CreateVideoFormValues,
-} from "../schemas/create-video.schema"
-import type { CreateVideoPayload } from "../types/video"
-import { videosService } from "../services/videos.service"
+} from "../schemas/create-video.schema";
+import { createVideo, type CreateVideoPayload } from "../services/video";
 
-const router = useRouter()
-const queryClient = useQueryClient()
+const router = useRouter();
+const queryClient = useQueryClient();
+const { t } = useI18n();
 
 const { mutateAsync, isPending } = useMutation({
-  mutationFn: (payload: CreateVideoPayload) => videosService.create(payload),
+  mutationFn: (payload: CreateVideoPayload) => createVideo(payload),
   onSuccess: async () => {
-    await queryClient.invalidateQueries({ queryKey: ["videos"] })
-    toast.success("Filme adicionado ao catálogo")
-    await router.push("/")
+    await queryClient.invalidateQueries({ queryKey: ["videos"] });
+    toast.success(t("addVideo.success"));
+    await router.push("/");
   },
-})
+});
 
 function toPayload(values: CreateVideoFormValues): CreateVideoPayload {
-  const description = values.description?.trim()
+  const description = values.description?.trim();
   return {
     title: values.title.trim(),
     url: values.url.trim(),
     coverUrl: values.coverUrl.trim(),
     ...(description ? { description } : {}),
-  }
+  };
 }
 
 const onSubmit = (async (values) => {
   try {
-    await mutateAsync(toPayload(values as CreateVideoFormValues))
+    await mutateAsync(toPayload(values as CreateVideoFormValues));
   } catch (e) {
     if (isAxiosError(e) && e.response?.status === 400) {
-      toast.error("Dados inválidos. Confira as URLs e o título.")
-      return
+      toast.error(t("addVideo.errorValidation"));
+      return;
     }
-    toast.error("Não foi possível cadastrar o filme")
+    toast.error(t("addVideo.errorGeneric"));
   }
-}) as SubmissionHandler
+}) as SubmissionHandler;
 </script>
 
 <template>
-  <Card class="mx-auto max-w-xl border-white/10 bg-[#1a1a1a] text-white shadow-xl">
+  <Card
+    class="mx-auto max-w-xl border-white/10 bg-[#1a1a1a] text-white shadow-xl"
+  >
     <CardHeader>
-      <CardTitle class="text-xl text-white">Novo filme</CardTitle>
+      <CardTitle class="text-xl text-white">{{
+        t("addVideo.cardTitle")
+      }}</CardTitle>
       <CardDescription class="text-white/60">
-        Informe URLs públicas do vídeo e da capa (o servidor não faz upload de
-        arquivos).
+        {{ t("addVideo.cardDescription") }}
       </CardDescription>
     </CardHeader>
     <CardContent>
@@ -84,13 +88,15 @@ const onSubmit = (async (values) => {
       >
         <FormField v-slot="{ componentField }" name="title">
           <FormItem>
-            <FormLabel class="text-white/90">Título</FormLabel>
+            <FormLabel class="text-white/90">{{
+              t("addVideo.title")
+            }}</FormLabel>
             <FormControl>
               <Input
                 v-bind="componentField"
                 autocomplete="off"
                 class="border-white/15 bg-[#121212] text-white placeholder:text-white/40"
-                placeholder="Ex.: Nome do filme"
+                :placeholder="t('addVideo.titlePh')"
               />
             </FormControl>
             <FormMessage />
@@ -99,7 +105,9 @@ const onSubmit = (async (values) => {
 
         <FormField v-slot="{ componentField }" name="url">
           <FormItem>
-            <FormLabel class="text-white/90">URL do vídeo</FormLabel>
+            <FormLabel class="text-white/90">{{
+              t("addVideo.videoUrl")
+            }}</FormLabel>
             <FormControl>
               <Input
                 v-bind="componentField"
@@ -114,13 +122,15 @@ const onSubmit = (async (values) => {
 
         <FormField v-slot="{ componentField }" name="coverUrl">
           <FormItem>
-            <FormLabel class="text-white/90">URL da capa</FormLabel>
+            <FormLabel class="text-white/90">{{
+              t("addVideo.coverUrl")
+            }}</FormLabel>
             <FormControl>
               <Input
                 v-bind="componentField"
                 type="url"
                 class="border-white/15 bg-[#121212] text-white placeholder:text-white/40"
-                placeholder="https://… (imagem)"
+                :placeholder="t('addVideo.coverPh')"
               />
             </FormControl>
             <FormMessage />
@@ -129,13 +139,15 @@ const onSubmit = (async (values) => {
 
         <FormField v-slot="{ componentField }" name="description">
           <FormItem>
-            <FormLabel class="text-white/90">Sinopse (opcional)</FormLabel>
+            <FormLabel class="text-white/90">{{
+              t("addVideo.description")
+            }}</FormLabel>
             <FormControl>
               <Textarea
                 v-bind="componentField"
                 rows="4"
                 class="border-white/15 bg-[#121212] text-white placeholder:text-white/40"
-                placeholder="Breve descrição…"
+                :placeholder="t('addVideo.descriptionPh')"
               />
             </FormControl>
             <FormMessage />
@@ -148,7 +160,11 @@ const onSubmit = (async (values) => {
             class="bg-[#E50914] text-white hover:bg-[#f6121a]"
             :disabled="isSubmitting || isPending"
           >
-            {{ isSubmitting || isPending ? "Salvando…" : "Adicionar ao catálogo" }}
+            {{
+              isSubmitting || isPending
+                ? t("addVideo.submitting")
+                : t("addVideo.submit")
+            }}
           </Button>
           <Button
             type="button"
@@ -157,7 +173,7 @@ const onSubmit = (async (values) => {
             :disabled="isSubmitting || isPending"
             @click="router.push('/')"
           >
-            Cancelar
+            {{ t("addVideo.cancel") }}
           </Button>
         </div>
       </Form>

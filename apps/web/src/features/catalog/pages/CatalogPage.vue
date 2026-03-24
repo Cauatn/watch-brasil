@@ -6,7 +6,9 @@ import CatalogTopBar from "../components/CatalogTopBar.vue";
 import MoviePosterStrip from "../components/MoviePosterStrip.vue";
 import { useVideosQuery } from "../composables/use-videos-query";
 import { computed, ref } from "vue";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const search = ref("");
 
 const { data, isPending, isError, error, refetch } = useVideosQuery();
@@ -53,7 +55,7 @@ const rest = computed(() => afterHero.value.slice(24));
           v-else-if="isError"
           class="rounded-2xl border border-white/10 bg-[#1a1a1a] p-8 text-center"
         >
-          <p class="text-white">Não foi possível carregar os filmes.</p>
+          <p class="text-white">{{ t("catalog.loadError") }}</p>
           <p class="mt-2 text-sm text-white/50">
             {{ error?.message }}
           </p>
@@ -62,7 +64,7 @@ const rest = computed(() => afterHero.value.slice(24));
             class="mt-6 rounded-full bg-[#E50914] px-6 py-2 text-sm font-medium text-white hover:bg-[#f6121a]"
             @click="() => refetch()"
           >
-            Tentar de novo
+            {{ t("catalog.retry") }}
           </button>
         </div>
 
@@ -71,19 +73,19 @@ const rest = computed(() => afterHero.value.slice(24));
 
           <MoviePosterStrip
             v-if="recommended.length"
-            title="Recomendados para você"
+            :title="t('catalog.recommended')"
             :videos="recommended"
           />
 
           <MoviePosterStrip
             v-if="trending.length"
-            title="Em alta"
+            :title="t('catalog.trending')"
             :videos="trending"
           />
 
           <MoviePosterStrip
             v-if="rest.length"
-            title="Mais filmes"
+            :title="t('catalog.moreMovies')"
             :videos="rest"
           />
 
@@ -92,9 +94,11 @@ const rest = computed(() => afterHero.value.slice(24));
             class="rounded-2xl border border-dashed border-white/15 py-20 text-center text-white/50"
           >
             <template v-if="search.trim()">
-              Nenhum resultado para "{{ search.trim() }}".
+              {{ t("catalog.emptySearch", { query: search.trim() }) }}
             </template>
-            <template v-else> Ainda não há filmes cadastrados. </template>
+            <template v-else>
+              {{ t("catalog.emptyCatalog") }}
+            </template>
           </div>
         </template>
     </div>

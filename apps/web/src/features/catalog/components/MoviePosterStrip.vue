@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import type { CatalogVideo } from "../types/video"
+import type { CatalogVideo } from "../services/video"
+import { useI18n } from "vue-i18n"
 
 defineProps<{
   title: string
   videos: CatalogVideo[]
 }>()
+
+const { t } = useI18n()
 
 function openWatch(v: CatalogVideo) {
   window.open(v.url, "_blank", "noopener,noreferrer")
@@ -21,7 +24,7 @@ function openWatch(v: CatalogVideo) {
         type="button"
         class="text-xs font-medium text-[#E50914] hover:underline"
       >
-        Ver tudo
+        {{ t("catalog.seeAll") }}
       </button>
     </div>
     <div class="-mx-1 flex gap-3 overflow-x-auto pb-2 pt-1">

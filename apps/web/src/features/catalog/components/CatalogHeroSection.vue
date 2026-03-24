@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { Button } from "@/components/ui/button"
-import type { CatalogVideo } from "../types/video"
+import type { CatalogVideo } from "../services/video"
 import { Play } from "lucide-vue-next"
+import { useI18n } from "vue-i18n"
+
+const { t } = useI18n()
 
 const props = defineProps<{
   featured: CatalogVideo | null
@@ -36,7 +39,7 @@ function openWatch(v: CatalogVideo) {
       </div>
       <div class="relative flex min-h-[280px] flex-col justify-end p-6 sm:min-h-[320px] md:p-8">
         <p class="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#E50914]">
-          Em destaque
+          {{ t("catalog.featured") }}
         </p>
         <h2 class="mb-2 text-3xl font-bold tracking-tight text-white md:text-4xl">
           {{ featured.title }}
@@ -54,7 +57,7 @@ function openWatch(v: CatalogVideo) {
             @click="openWatch(featured)"
           >
             <Play class="size-4 fill-current" />
-            Assistir agora
+            {{ t("catalog.watchNow") }}
           </Button>
         </div>
       </div>
@@ -63,7 +66,7 @@ function openWatch(v: CatalogVideo) {
       v-else
       class="flex min-h-[200px] items-center justify-center rounded-2xl border border-dashed border-white/15 bg-white/[0.03] text-center text-white/40"
     >
-      Nenhum filme em destaque
+      {{ t("catalog.noFeatured") }}
     </div>
 
     <div
@@ -71,7 +74,7 @@ function openWatch(v: CatalogVideo) {
       class="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#161616] shadow-xl"
     >
       <p class="px-4 pb-2 pt-4 text-xs font-semibold uppercase tracking-widest text-white/50">
-        Filme do dia
+        {{ t("catalog.movieOfDay") }}
       </p>
       <div class="relative flex-1 px-4 pb-4">
         <img
@@ -89,7 +92,7 @@ function openWatch(v: CatalogVideo) {
             class="mt-3 w-full border-white/20 bg-transparent text-white hover:bg-white/10"
             @click="openWatch(spotlight)"
           >
-            Assistir
+            {{ t("catalog.watch") }}
           </Button>
         </div>
       </div>

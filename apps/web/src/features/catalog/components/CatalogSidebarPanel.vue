@@ -29,11 +29,13 @@ import {
   Settings,
 } from "lucide-vue-next"
 import { computed } from "vue"
+import { useI18n } from "vue-i18n"
 import { useRoute, useRouter } from "vue-router"
 
 const authStore = useAuthStore()
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 
 const initials = computed(() => {
   const n = authStore.user?.name?.trim()
@@ -62,7 +64,7 @@ function logout() {
       >
         <Clapperboard class="size-5" />
       </span>
-      <span class="text-lg leading-none">WATCH BRASIL</span>
+      <span class="text-lg leading-none">{{ t("brand.title") }}</span>
     </RouterLink>
   </SidebarHeader>
 
@@ -73,24 +75,26 @@ function logout() {
           <SidebarMenuItem>
             <SidebarMenuButton
               as-child
+              :tooltip="t('sidebar.home')"
               :is-active="route.path === '/'"
               class="text-sidebar-foreground hover:bg-white/10 data-[active=true]:bg-white/15"
             >
               <RouterLink to="/">
                 <Home />
-                <span>Início</span>
+                <span>{{ t("sidebar.home") }}</span>
               </RouterLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
               as-child
+              :tooltip="t('sidebar.addMovie')"
               :is-active="route.path === '/catalog/add'"
               class="text-sidebar-foreground hover:bg-white/10 data-[active=true]:bg-white/15"
             >
               <RouterLink to="/catalog/add">
                 <PlusCircle />
-                <span>Adicionar filme</span>
+                <span>{{ t("sidebar.addMovie") }}</span>
               </RouterLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -98,28 +102,40 @@ function logout() {
             <SidebarMenuButton
               disabled
               class="opacity-50"
-              tooltip="Em breve"
+              :tooltip="t('sidebar.comingSoon')"
             >
               <Heart />
-              <span>Minha lista</span>
+              <span>{{ t("sidebar.watchlist") }}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton disabled class="opacity-50" tooltip="Em breve">
+            <SidebarMenuButton
+              disabled
+              class="opacity-50"
+              :tooltip="t('sidebar.comingSoon')"
+            >
               <Clock />
-              <span>Histórico</span>
+              <span>{{ t("sidebar.history") }}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton disabled class="opacity-50" tooltip="Em breve">
+            <SidebarMenuButton
+              disabled
+              class="opacity-50"
+              :tooltip="t('sidebar.comingSoon')"
+            >
               <Headphones />
-              <span>Suporte</span>
+              <span>{{ t("sidebar.support") }}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton disabled class="opacity-50" tooltip="Em breve">
+            <SidebarMenuButton
+              disabled
+              class="opacity-50"
+              :tooltip="t('sidebar.comingSoon')"
+            >
               <Settings />
-              <span>Configurações</span>
+              <span>{{ t("sidebar.settings") }}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -136,7 +152,7 @@ function logout() {
       </Avatar>
       <div class="min-w-0 flex-1">
         <p class="truncate text-sm font-medium text-white">
-          {{ authStore.user?.name ?? "Usuário" }}
+          {{ authStore.user?.name ?? t("sidebar.user") }}
         </p>
         <p class="truncate text-xs text-white/50">
           {{ authStore.user?.email }}
@@ -151,7 +167,7 @@ function logout() {
         <DropdownMenuContent align="end" class="w-44">
           <DropdownMenuItem @click="logout">
             <LogOut class="mr-2 size-4" />
-            Sair
+            {{ t("sidebar.logout") }}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
