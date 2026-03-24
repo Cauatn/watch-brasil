@@ -1,4 +1,4 @@
-import { api } from "@/shared/api/http";
+import { api } from "@/lib/api";
 import type { AuthTokens, LoginPayload, PublicUser } from "../types/auth";
 
 export const authService = {

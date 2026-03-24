@@ -1,5 +1,5 @@
 import type { PublicUser } from "@/features/auth/types/auth";
-import { api } from "@/shared/api/http";
+import { api } from "@/lib/api";
 
 export type VideoStatus = "processing" | "ready" | "error";
 
