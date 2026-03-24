@@ -17,7 +17,7 @@ RUN bun install
 # Copia o restante do repositório
 COPY . .
 
-# Build opcional do monorepo (ajuste conforme pipeline)
+# Build do monorepo
 RUN bun run build
 
 # Comando padrão focado em validação de tipos
