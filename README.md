@@ -1,159 +1,193 @@
-# Turborepo starter
+# Watch Brasil
 
-This Turborepo starter is maintained by the Turborepo core team.
+Sistema full-stack para catalogo de videos com autenticacao JWT e comentarios.
 
-## Using this example
+## Sobre o projeto
 
-Run the following command:
+O **Watch Brasil** e um monorepo com frontend e backend separados:
 
-```sh
-npx create-turbo@latest
+- **Frontend** (`apps/web`): Vue 3 + TypeScript + Vite
+- **Backend** (`apps/api`): Fastify + TypeScript + PostgreSQL
+
+O backend expoe API REST com:
+
+- autenticacao (`/auth/register`, `/auth/login`, `/auth/refresh`)
+- perfil de usuario (`/users/me`)
+- catalogo de videos (`/videos`)
+- comentarios por video (`/videos/:id/comments`)
+
+## Tecnologias principais
+
+- **Monorepo**: Turborepo
+- **Package manager**: Bun
+- **Frontend**: Vue 3 + Vite + TypeScript
+- **Backend**: Fastify + TypeScript + JWT + Zod
+- **Banco de dados**: PostgreSQL
+- **Containerizacao**: Docker + Docker Compose
+
+## Pre-requisitos
+
+Antes de comecar, instale:
+
+- **Node.js** (v18+)
+- **Bun** (v1.3+)
+- **Docker** e **Docker Compose**
+
+## Instalacao
+
+### 1. Clone o repositorio
+
+```bash
+git clone <url-do-repositorio>
+cd watch-brasil
 ```
 
-## What's inside?
+### 2. Instale as dependencias
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+```bash
+bun install
 ```
 
-Without global `turbo`, use your package manager:
+## Configuracao de variaveis de ambiente
 
-```sh
-cd my-turborepo
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+### Backend (`apps/api`)
+
+Crie o arquivo `apps/api/.env`:
+
+```env
+DATABASE_URL=postgresql://watch_user:watch_pass@localhost:5432/watch_brasil
+JWT_SECRET=watch-brasil-dev-secret
+PORT=3333
+HOST=0.0.0.0
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+### Frontend (`apps/web`)
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+Crie o arquivo `apps/web/.env`:
 
-```sh
-turbo build --filter=docs
+```env
+VITE_API_URL=http://localhost:3333
 ```
 
-Without global `turbo`:
+## Como executar
 
-```sh
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+### Opcao 1: Desenvolvimento local
+
+#### 1) Suba o banco
+
+```bash
+docker compose up -d
 ```
 
-### Develop
+#### 2) Rode frontend e backend
 
-To develop all apps and packages, run the following command:
+Na raiz do projeto:
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
+```bash
+bun run dev
 ```
 
-Without global `turbo`, use your package manager:
+Servicos locais:
 
-```sh
-cd my-turborepo
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:3333
+- **Swagger**: http://localhost:3333/docs
+
+### Opcao 2: Somente backend
+
+```bash
+cd apps/api
+bun run dev
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+## Estrutura do projeto
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
+```text
+watch-brasil/
+├── apps/
+│   ├── web/                    # Frontend (Vue)
+│   └── api/                    # Backend (Fastify)
+├── docker-compose.yml          # PostgreSQL
+├── package.json                # Scripts do monorepo
+└── turbo.json                  # Configuracao Turborepo
 ```
 
-Without global `turbo`:
+## Scripts disponiveis
 
-```sh
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+### Raiz
+
+| Comando               | Descricao                         |
+| --------------------- | --------------------------------- |
+| `bun run dev`         | Roda apps em modo desenvolvimento |
+| `bun run build`       | Build de todos os workspaces      |
+| `bun run check-types` | Validacao de tipos no monorepo    |
+| `bun run lint`        | Lint no monorepo                  |
+
+### Backend (`apps/api`)
+
+| Comando               | Descricao                        |
+| --------------------- | -------------------------------- |
+| `bun run dev`         | Roda API em modo desenvolvimento |
+| `bun run build`       | Compila API                      |
+| `bun run start`       | Inicia API compilada             |
+| `bun run check-types` | Valida tipos da API              |
+| `bun run test`        | Executa testes da API            |
+
+## Docker
+
+O `docker-compose.yml` da raiz sobe o banco PostgreSQL usado pela API:
+
+```yaml
+services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
 ```
 
-### Remote Caching
+Comandos uteis:
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+```bash
+# Subir banco
+docker compose up -d
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+# Ver logs
+docker compose logs -f
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
+# Parar banco
+docker compose down
 ```
 
-Without global `turbo`, use your package manager:
+## Documentacao da API
 
-```sh
-cd my-turborepo
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+Swagger UI:
+
+- http://localhost:3333/docs
+
+Todos os endpoints protegidos exigem:
+
+```http
+Authorization: Bearer <token>
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+## Convencoes de commit
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+O projeto segue Conventional Commits:
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+- `feat`: nova funcionalidade
+- `fix`: correcao de bug
+- `refactor`: refatoracao
+- `docs`: documentacao
+- `chore`: manutencao
 
-```sh
-turbo link
-```
+## Troubleshooting
 
-Without global `turbo`:
+### API nao conecta no banco
 
-```sh
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
+- confirme se o postgres esta ativo: `docker compose ps`
+- valide `DATABASE_URL` em `apps/api/.env`
 
-## Useful Links
+### Swagger nao abre
 
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+- confirme se o backend subiu em `3333`
+- acesse `http://localhost:3333/docs`
