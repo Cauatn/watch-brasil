@@ -1,5 +1,9 @@
 import { api } from "@/shared/api/http";
-import type { VideoListResponse } from "../types/video";
+import type {
+  CatalogVideoDetail,
+  CreateVideoPayload,
+  VideoListResponse,
+} from "../types/video";
 
 export type ListVideosParams = {
   page?: number;
@@ -9,6 +13,11 @@ export type ListVideosParams = {
 };
 
 export const videosService = {
+  async create(body: CreateVideoPayload) {
+    const { data } = await api.post<CatalogVideoDetail>("/videos", body);
+    return data;
+  },
+
   async list(params: ListVideosParams = {}) {
     const page = params.page ?? 1;
     const limit = params.limit ?? 60;

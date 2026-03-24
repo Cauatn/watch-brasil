@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Sidebar,
-  SidebarInset,
-  SidebarProvider,
-} from "@/components/ui/sidebar";
+import CatalogShell from "../components/CatalogShell.vue";
 import CatalogHeroSection from "../components/CatalogHeroSection.vue";
-import CatalogSidebarPanel from "../components/CatalogSidebarPanel.vue";
 import CatalogTopBar from "../components/CatalogTopBar.vue";
 import MoviePosterStrip from "../components/MoviePosterStrip.vue";
 import { useVideosQuery } from "../composables/use-videos-query";
@@ -34,16 +29,9 @@ const rest = computed(() => afterHero.value.slice(24));
 </script>
 
 <template>
-  <SidebarProvider>
-    <Sidebar
-      collapsible="offcanvas"
-      class="border-white/10 bg-[#0f0f0f] text-sidebar-foreground"
-    >
-      <CatalogSidebarPanel />
-    </Sidebar>
-    <SidebarInset class="flex min-h-svh flex-1 flex-col bg-[#121212]">
-      <CatalogTopBar v-model:search="search" />
-      <div class="flex flex-1 flex-col gap-10 overflow-auto p-4 pb-16 md:p-8">
+  <CatalogShell>
+    <CatalogTopBar v-model:search="search" />
+    <div class="flex flex-1 flex-col gap-10 overflow-auto p-4 pb-16 md:p-8">
         <div v-if="isPending" class="space-y-8">
           <div class="grid gap-4 lg:grid-cols-[1.4fr_0.75fr]">
             <Skeleton class="h-[320px] rounded-2xl bg-white/10" />
@@ -109,7 +97,6 @@ const rest = computed(() => afterHero.value.slice(24));
             <template v-else> Ainda não há filmes cadastrados. </template>
           </div>
         </template>
-      </div>
-    </SidebarInset>
-  </SidebarProvider>
+    </div>
+  </CatalogShell>
 </template>

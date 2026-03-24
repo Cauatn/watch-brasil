@@ -1,3 +1,5 @@
+import type { PublicUser } from "@/features/auth/types/auth";
+
 export type VideoStatus = "processing" | "ready" | "error";
 
 export type CatalogVideo = {
@@ -18,4 +20,15 @@ export type VideoListResponse = {
   total: number;
   page: number;
   limit: number;
+};
+
+export type CreateVideoPayload = {
+  title: string;
+  url: string;
+  coverUrl: string;
+  description?: string;
+};
+
+export type CatalogVideoDetail = CatalogVideo & {
+  uploadedBy: PublicUser | null;
 };

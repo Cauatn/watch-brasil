@@ -25,6 +25,7 @@ import {
   Home,
   LogOut,
   MoreVertical,
+  PlusCircle,
   Settings,
 } from "lucide-vue-next"
 import { computed } from "vue"
@@ -78,6 +79,18 @@ function logout() {
               <RouterLink to="/">
                 <Home />
                 <span>Início</span>
+              </RouterLink>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              as-child
+              :is-active="route.path === '/catalog/add'"
+              class="text-sidebar-foreground hover:bg-white/10 data-[active=true]:bg-white/15"
+            >
+              <RouterLink to="/catalog/add">
+                <PlusCircle />
+                <span>Adicionar filme</span>
               </RouterLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
