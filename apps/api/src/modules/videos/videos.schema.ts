@@ -6,9 +6,9 @@ export const videoParamsSchema = z.object({ id: uuidSchema });
 
 export const createVideoSchema = z.object({
   title: z.string().min(1),
+  url: z.url(),
+  coverUrl: z.url(),
   description: z.string().optional(),
-  mimeType: z.string().optional(),
-  sizeBytes: z.number().int().nonnegative().optional(),
 });
 
 export const listVideosQuerySchema = z.object({
@@ -18,11 +18,9 @@ export const listVideosQuerySchema = z.object({
   uploadedBy: uuidSchema.optional(),
 });
 
-export const updateVideoSchema = z
-  .object({
-    title: z.string().min(1).optional(),
-    description: z.string().optional(),
-  })
-  .refine((v) => v.title !== undefined || v.description !== undefined, {
-    message: "At least one field is required",
-  });
+export const updateVideoSchema = z.object({
+  title: z.string().min(2),
+  url: z.url().optional(),
+  coverUrl: z.url().optional(),
+  description: z.string().optional(),
+});
