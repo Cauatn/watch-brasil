@@ -35,9 +35,29 @@ services:
       NODE_ENV: development
       PORT: 3333
       HOST: 0.0.0.0
+      OTEL_ENABLED: "true"
+      OTEL_SERVICE_NAME: watch-brasil-api
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
     depends_on:
       postgres:
         condition: service_healthy
+      otel-collector:
+        condition: service_started
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3333}
+    image: watch-brasil-web:latest
+    container_name: watch-brasil-web
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    depends_on:
+      api:
+        condition: service_started
     restart: unless-stopped
 
   # Servico de teste da API (executado sob demanda)
@@ -52,12 +72,36 @@ services:
       DATABASE_URL: postgresql://watch_user:watch_pass@postgres:5432/watch_brasil
       JWT_SECRET: watch-brasil-dev-secret
       NODE_ENV: test
+      OTEL_ENABLED: "false"
     depends_on:
       postgres:
         condition: service_healthy
     command: sh -c "bun install && bun run check-types && bun run test"
     profiles:
       - test
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.115.1
+    container_name: watch-brasil-otel-collector
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    volumes:
+      - ./observability/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml:ro
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+    depends_on:
+      jaeger:
+        condition: service_started
+    restart: unless-stopped
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.62.0
+    container_name: watch-brasil-jaeger
+    ports:
+      - "16686:16686"
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    restart: unless-stopped
 
 volumes:
   watch_brasil_postgres_data:
