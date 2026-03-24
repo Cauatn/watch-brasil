@@ -11,16 +11,18 @@ export const videosService = {
   async create(input: {
     actorId: string
     title: string
+    url: string
+    coverUrl: string
     description?: string
-    mimeType?: string
-    sizeBytes?: number
   }) {
     const created = await videosRepository.createVideo({
       id: randomUUID(),
       title: input.title,
+      url: input.url,
+      coverUrl: input.coverUrl,
       description: input.description,
-      mimeType: input.mimeType ?? 'video/mp4',
-      sizeBytes: input.sizeBytes ?? 0,
+      mimeType: 'video/mp4',
+      sizeBytes: 0,
       status: 'ready',
       uploadedById: input.actorId,
     })
@@ -34,13 +36,15 @@ export const videosService = {
     return { ...video, uploadedBy: await usersRepository.findById(video.uploadedById) }
   },
 
-  async update(input: { videoId: string; actorId: string; title?: string; description?: string }) {
+  async update(input: { videoId: string; actorId: string; title?: string; url?: string; coverUrl?: string; description?: string }) {
     const current = await videosRepository.findVideoById(input.videoId)
     if (!current) return { type: 'not_found' as const }
     if (current.uploadedById !== input.actorId) return { type: 'forbidden' as const }
 
     const updated = await videosRepository.updateVideo(input.videoId, {
       title: input.title,
+      url: input.url,
+      coverUrl: input.coverUrl,
       description: input.description,
     })
     if (!updated) return { type: 'not_found' as const }

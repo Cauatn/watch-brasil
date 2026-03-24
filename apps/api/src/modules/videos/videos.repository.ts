@@ -8,6 +8,7 @@ export type VideoRecord = {
   title: string;
   description: string | null;
   url: string;
+  coverUrl: string;
   mimeType: string;
   sizeBytes: number;
   status: VideoStatus;
@@ -27,6 +28,8 @@ export const videosRepository = {
   async createVideo(input: {
     id: string;
     title: string;
+    url: string;
+    coverUrl: string;
     description?: string;
     uploadedById: string;
     mimeType: string;
@@ -37,7 +40,8 @@ export const videosRepository = {
       id: input.id,
       title: input.title,
       description: input.description ?? null,
-      url: `/uploads/videos/${input.id}.mp4`,
+      url: input.url,
+      coverUrl: input.coverUrl,
       mimeType: input.mimeType,
       sizeBytes: input.sizeBytes,
       status: input.status,
@@ -94,11 +98,16 @@ export const videosRepository = {
 
   async updateVideo(
     videoId: string,
-    input: { title?: string; description?: string },
+    input: { title?: string; url?: string; coverUrl?: string; description?: string },
   ) {
     const updated = await db
       .update(videosTable)
-      .set({ title: input.title, description: input.description })
+      .set({
+        title: input.title,
+        url: input.url,
+        coverUrl: input.coverUrl,
+        description: input.description,
+      })
       .where(eq(videosTable.id, videoId))
       .returning();
     return updated[0] ? mapVideo(updated[0]) : null;

@@ -24,6 +24,7 @@ export const videosTable = pgTable("videos", {
   title: text("title").notNull(),
   description: text("description"),
   url: text("url").notNull(),
+  coverUrl: text("cover_url").notNull(),
   mimeType: text("mime_type").notNull(),
   sizeBytes: integer("size_bytes").notNull(),
   status: text("status").notNull(),
