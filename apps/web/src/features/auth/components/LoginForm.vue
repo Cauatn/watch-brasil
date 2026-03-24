@@ -2,7 +2,7 @@
 import type { HTMLAttributes } from "vue"
 import { isAxiosError } from "axios"
 import type { SubmissionHandler } from "vee-validate"
-import { useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import { toast } from "vue-sonner"
 import { Button } from "@/components/ui/button"
 import {
@@ -33,14 +33,24 @@ const props = defineProps<{
 }>()
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
+
+function redirectAfterLogin() {
+  const raw = route.query.redirect
+  const path = typeof raw === "string" ? raw : null
+  if (path?.startsWith("/") && !path.startsWith("//")) {
+    return path
+  }
+  return "/"
+}
 
 const onSubmit = (async (values) => {
   const { email, password } = values as LoginFormValues
   try {
     await authStore.login({ email, password })
     toast.success("Login realizado")
-    await router.push("/")
+    await router.push(redirectAfterLogin())
   } catch (e) {
     if (isAxiosError(e) && e.response?.status === 401) {
       toast.error("E-mail ou senha inválidos")
