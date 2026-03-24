@@ -1,6 +1,5 @@
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
-import { requireAuth } from '../../plugins/auth.js'
 import { sendError } from '../../shared/utils/index.js'
 import { createVideoSchema, listVideosQuerySchema, updateVideoSchema, videoParamsSchema } from './videos.schema.js'
 import { videosService } from './videos.service.js'
@@ -10,31 +9,25 @@ export async function videosRoute(app: FastifyInstance) {
 
   videos.get('/videos', {
     schema: { tags: ['Videos'], summary: 'Listar videos disponiveis', querystring: listVideosQuerySchema },
+    preHandler: app.authenticate,
     handler: async (request, reply) => {
-      const user = await requireAuth(request, reply)
-      if (!user) return
-
       return reply.send(await videosService.list(request.query))
     },
   })
 
   videos.post('/videos', {
     schema: { tags: ['Videos'], summary: 'Fazer upload de um video', body: createVideoSchema },
+    preHandler: app.authenticate,
     handler: async (request, reply) => {
-      const user = await requireAuth(request, reply)
-      if (!user) return
-
-      const video = await videosService.create({ actorId: user.id, ...request.body })
+      const video = await videosService.create({ actorId: request.currentUser!.id, ...request.body })
       return reply.code(201).send(video)
     },
   })
 
   videos.get('/videos/:id', {
     schema: { tags: ['Videos'], summary: 'Buscar detalhes de um video', params: videoParamsSchema },
+    preHandler: app.authenticate,
     handler: async (request, reply) => {
-      const user = await requireAuth(request, reply)
-      if (!user) return
-
       const video = await videosService.getById(request.params.id)
       if (!video) {
         return sendError(reply, { statusCode: 404, error: 'Recurso nao encontrado', code: 'NOT_FOUND' })
@@ -51,13 +44,11 @@ export async function videosRoute(app: FastifyInstance) {
       params: videoParamsSchema,
       body: updateVideoSchema,
     },
+    preHandler: app.authenticate,
     handler: async (request, reply) => {
-      const user = await requireAuth(request, reply)
-      if (!user) return
-
       const result = await videosService.update({
         videoId: request.params.id,
-        actorId: user.id,
+        actorId: request.currentUser!.id,
         ...request.body,
       })
 
@@ -74,11 +65,12 @@ export async function videosRoute(app: FastifyInstance) {
 
   videos.delete('/videos/:id', {
     schema: { tags: ['Videos'], summary: 'Remover video e arquivo do disco', params: videoParamsSchema },
+    preHandler: app.authenticate,
     handler: async (request, reply) => {
-      const user = await requireAuth(request, reply)
-      if (!user) return
-
-      const result = await videosService.delete({ videoId: request.params.id, actorId: user.id })
+      const result = await videosService.delete({
+        videoId: request.params.id,
+        actorId: request.currentUser!.id,
+      })
 
       if (result.type === 'not_found') {
         return sendError(reply, { statusCode: 404, error: 'Recurso nao encontrado', code: 'NOT_FOUND' })

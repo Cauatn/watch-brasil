@@ -1,6 +1,5 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
-import { requireAuth } from "../../plugins/auth.js";
 import { updateUserSchema } from "./users.schema.js";
 import { usersService } from "./users.service.js";
 
@@ -12,10 +11,9 @@ export async function usersRoute(app: FastifyInstance) {
       tags: ["Users"],
       summary: "Retornar perfil do usuario autenticado",
     },
+    preHandler: app.authenticate,
     handler: async (request, reply) => {
-      const user = await requireAuth(request, reply);
-      if (!user) return;
-      return reply.send(user);
+      return reply.send(request.currentUser);
     },
   });
 
@@ -25,11 +23,9 @@ export async function usersRoute(app: FastifyInstance) {
       summary: "Atualizar nome ou senha",
       body: updateUserSchema,
     },
+    preHandler: app.authenticate,
     handler: async (request, reply) => {
-      const user = await requireAuth(request, reply);
-      if (!user) return;
-
-      const updated = await usersService.updateMe(user.id, request.body);
+      const updated = await usersService.updateMe(request.currentUser!.id, request.body);
       return reply.send(updated);
     },
   });
@@ -39,10 +35,9 @@ export async function usersRoute(app: FastifyInstance) {
       tags: ["Users"],
       summary: "Remover conta do usuario autenticado",
     },
+    preHandler: app.authenticate,
     handler: async (request, reply) => {
-      const user = await requireAuth(request, reply);
-      if (!user) return;
-      await usersService.deleteMe(user.id);
+      await usersService.deleteMe(request.currentUser!.id);
       return reply.code(204).send();
     },
   });

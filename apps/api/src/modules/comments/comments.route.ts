@@ -1,6 +1,5 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
-import { requireAuth } from "../../plugins/auth.js";
 import { sendError } from "../../shared/utils/index.js";
 import {
   commentParamsSchema,
@@ -20,10 +19,8 @@ export async function commentsRoute(app: FastifyInstance) {
       params: videoParamsSchema,
       querystring: commentsQuerySchema,
     },
+    preHandler: app.authenticate,
     handler: async (request, reply) => {
-      const user = await requireAuth(request, reply);
-      if (!user) return;
-
       const result = await commentsService.list({
         videoId: request.params.id,
         ...request.query,
@@ -48,13 +45,11 @@ export async function commentsRoute(app: FastifyInstance) {
       params: videoParamsSchema,
       body: createCommentSchema,
     },
+    preHandler: app.authenticate,
     handler: async (request, reply) => {
-      const user = await requireAuth(request, reply);
-      if (!user) return;
-
       const result = await commentsService.create({
         videoId: request.params.id,
-        actorId: user.id,
+        actorId: request.currentUser!.id,
         content: request.body.content,
       });
 
@@ -76,14 +71,12 @@ export async function commentsRoute(app: FastifyInstance) {
       summary: "Remover comentario",
       params: commentParamsSchema,
     },
+    preHandler: app.authenticate,
     handler: async (request, reply) => {
-      const user = await requireAuth(request, reply);
-      if (!user) return;
-
       const result = await commentsService.delete({
         videoId: request.params.id,
         commentId: request.params.commentId,
-        actorId: user.id,
+        actorId: request.currentUser!.id,
       });
 
       if (result.type === "video_not_found" || result.type === "not_found") {
