@@ -27,7 +27,10 @@ import {
   createVideoValidationSchema,
   type CreateVideoFormValues,
 } from "../schemas/create-video.schema";
-import { createVideo, type CreateVideoPayload } from "../services/video";
+import {
+  createVideo,
+  type CreateVideoPayload,
+} from "@/features/catalog/services/video";
 
 const router = useRouter();
 const queryClient = useQueryClient();

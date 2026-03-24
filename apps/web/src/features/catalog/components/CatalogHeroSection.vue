@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Button } from "@/components/ui/button"
-import type { CatalogVideo } from "../services/video"
+import type { CatalogVideo } from "@/features/catalog/services/video"
 import { Play } from "lucide-vue-next"
 import { useI18n } from "vue-i18n"
 

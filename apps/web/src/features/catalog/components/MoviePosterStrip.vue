@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CatalogVideo } from "../services/video"
+import type { CatalogVideo } from "@/features/catalog/services/video"
 import { useI18n } from "vue-i18n"
 
 defineProps<{

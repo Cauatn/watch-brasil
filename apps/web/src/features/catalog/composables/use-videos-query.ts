@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/vue-query";
 import { computed, type MaybeRefOrGetter, toValue } from "vue";
-import { listVideos } from "../services/video";
+import { listVideos } from "@/features/catalog/services/video";
 
 export function useVideosQuery(opts?: { limit?: MaybeRefOrGetter<number> }) {
   const limit = computed(() => toValue(opts?.limit) ?? 80);
