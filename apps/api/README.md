@@ -84,6 +84,21 @@ bun run dev
 
 - API: `http://localhost:3333`
 - Swagger: `http://localhost:3333/docs`
+- Jaeger UI (tracing): `http://localhost:16686`
+
+## Observabilidade (OpenTelemetry + Jaeger)
+
+Para tracing local, suba os servicos pela raiz do monorepo:
+
+```bash
+docker compose up -d
+```
+
+Configuracao usada na API:
+
+- `OTEL_ENABLED=true`
+- `OTEL_SERVICE_NAME=watch-brasil-api`
+- `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318`
 
 ## Scripts disponiveis (apps/api)
 
