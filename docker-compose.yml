@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: watch-brasil-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: watch_brasil
+      POSTGRES_USER: watch_user
+      POSTGRES_PASSWORD: watch_pass
+    volumes:
+      - watch_brasil_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U watch_user -d watch_brasil"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  watch_brasil_postgres_data:

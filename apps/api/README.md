@@ -1,16 +1,43 @@
 # API Fastify
 
-API REST com Fastify para gerenciamento de tarefas.
+API REST com Fastify, PostgreSQL e Drizzle ORM.
 
 ## Stack
 
 - Node.js + TypeScript
 - Fastify
+- PostgreSQL (Docker)
+- Drizzle ORM + Drizzle Kit
 - OpenAPI via Swagger (`/docs`)
 - AWS Lambda handler (`src/lambda.ts`)
-- Jest para testes unitarios
+
+## Subir banco PostgreSQL
+
+Na raiz do monorepo:
+
+```bash
+docker compose up -d
+```
+
+## Configurar variaveis de ambiente
+
+Em `apps/api`:
+
+```bash
+cp .env.example .env
+```
+
+## Aplicar schema no banco
+
+Em `apps/api`:
+
+```bash
+bun run db:push
+```
 
 ## Rodar localmente
+
+Na raiz do monorepo:
 
 ```bash
 bun install
@@ -20,35 +47,17 @@ bun run dev --filter=api
 Servidor local: `http://localhost:3333`  
 Swagger: `http://localhost:3333/docs`
 
-## Endpoints
+## Scripts de banco (apps/api)
 
-- `GET /api/health`
-- `GET /api/hello`
-- `GET /api/tasks`
-- `POST /api/tasks`
-- `GET /api/tasks/:id`
-- `PATCH /api/tasks/:id`
-- `DELETE /api/tasks/:id`
+- `bun run db:generate` - gera migracoes SQL
+- `bun run db:push` - aplica schema no banco
+- `bun run db:studio` - abre Drizzle Studio
 
-### Exemplo create task
+## Arquitetura
 
-```bash
-curl -X POST http://localhost:3333/api/tasks \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Estudar arquitetura serverless"}'
-```
+O modulo `watch` esta organizado em:
 
-## Deploy em AWS Lambda
-
-O handler ja esta pronto em `src/lambda.ts` usando `@fastify/aws-lambda`.
-
-Exemplo de roteamento com API Gateway:
-
-- `ANY /{proxy+}` -> `handler`
-
-## Proximos passos recomendados
-
-- Persistencia em PostgreSQL (Prisma/Drizzle)
-- Autenticacao JWT
-- OpenTelemetry + Jaeger/Datadog
-- Dockerfile para ambiente de desenvolvimento
+- `watch.routes.ts` - camada HTTP (Fastify)
+- `watch.use-cases.ts` - regras de negocio (use_case)
+- `watch.repository.ts` - acesso a dados com Drizzle
+- `src/shared/db/*` - conexao e schema do banco
