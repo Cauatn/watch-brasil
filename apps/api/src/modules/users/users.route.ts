@@ -25,7 +25,10 @@ export async function usersRoute(app: FastifyInstance) {
     },
     preHandler: app.authenticate,
     handler: async (request, reply) => {
-      const updated = await usersService.updateMe(request.currentUser!.id, request.body);
+      const updated = await usersService.updateMe(
+        request.currentUser!.id,
+        request.body,
+      );
       return reply.send(updated);
     },
   });

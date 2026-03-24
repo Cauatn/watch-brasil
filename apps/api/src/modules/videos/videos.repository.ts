@@ -98,7 +98,12 @@ export const videosRepository = {
 
   async updateVideo(
     videoId: string,
-    input: { title?: string; url?: string; coverUrl?: string; description?: string },
+    input: {
+      title?: string;
+      url?: string;
+      coverUrl?: string;
+      description?: string;
+    },
   ) {
     const updated = await db
       .update(videosTable)
