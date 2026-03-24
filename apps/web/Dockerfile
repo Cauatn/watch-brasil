@@ -14,7 +14,7 @@ WORKDIR /app/apps/web
 ARG VITE_API_URL=http://localhost:3333
 ENV VITE_API_URL=${VITE_API_URL}
 
-RUN bun run build
+RUN bunx vite build
 
 FROM nginx:1.27-alpine
 
