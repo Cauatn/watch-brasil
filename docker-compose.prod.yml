@@ -1,0 +1,21 @@
+# Stack de producao: use junto com docker-compose.yml
+# Ex.: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# Front em http://localhost:${WEB_PORT:-8080}
+# Defina VITE_API_URL com a URL da API como o navegador a enxerga (ex.: https://api.seudominio.com).
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3333}
+    image: watch-brasil-web:latest
+    container_name: watch-brasil-web
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    depends_on:
+      api:
+        condition: service_started
+    restart: unless-stopped
