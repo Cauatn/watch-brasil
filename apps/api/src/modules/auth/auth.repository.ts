@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "../../shared/db/client.js";
-import { sessionsTable, usersTable } from "../../shared/db/schema.js";
+import { usersTable } from "../../shared/db/schema.js";
 import type { PublicUser } from "../../shared/types/index.js";
 
 export const authRepository = {
@@ -44,39 +44,5 @@ export const authRepository = {
       where: eq(usersTable.email, email),
     });
     return user ?? null;
-  },
-
-  async createSession(input: {
-    id: string;
-    userId: string;
-    accessToken: string;
-    refreshToken: string;
-  }) {
-    await db.insert(sessionsTable).values({
-      id: input.id,
-      userId: input.userId,
-      accessToken: input.accessToken,
-      refreshToken: input.refreshToken,
-      createdAt: new Date(),
-    });
-  },
-
-  async findUserByAccessToken(accessToken: string) {
-    const session = await db.query.sessionsTable.findFirst({
-      where: eq(sessionsTable.accessToken, accessToken),
-    });
-    if (!session) return null;
-    return db.query.usersTable.findFirst({
-      where: eq(usersTable.id, session.userId),
-    });
-  },
-
-  async refreshAccessToken(refreshToken: string, nextAccessToken: string) {
-    const updated = await db
-      .update(sessionsTable)
-      .set({ accessToken: nextAccessToken })
-      .where(eq(sessionsTable.refreshToken, refreshToken))
-      .returning({ accessToken: sessionsTable.accessToken });
-    return updated[0]?.accessToken ?? null;
   },
 };

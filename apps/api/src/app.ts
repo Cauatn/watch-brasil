@@ -1,4 +1,5 @@
 import cors from "@fastify/cors";
+import jwt from "@fastify/jwt";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import Fastify from "fastify";
@@ -20,6 +21,9 @@ app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
 app.register(cors, { origin: true });
+app.register(jwt, {
+  secret: process.env.JWT_SECRET ?? "watch-brasil-dev-secret",
+});
 
 app.register(swagger, {
   openapi: {

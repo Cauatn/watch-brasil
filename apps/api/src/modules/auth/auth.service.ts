@@ -1,46 +1,32 @@
 import { randomUUID } from 'node:crypto'
+import { compare, hash } from 'bcryptjs'
 import { authRepository } from './auth.repository.js'
 
 export const authService = {
   async register(input: { name: string; email: string; password: string }) {
+    const passwordHash = await hash(input.password, 10)
     return authRepository.createUser({
       id: randomUUID(),
       name: input.name,
       email: input.email.trim().toLowerCase(),
-      password: input.password,
+      password: passwordHash,
     })
   },
 
   async login(input: { email: string; password: string }) {
     const user = await authRepository.findUserByEmail(input.email.trim().toLowerCase())
-    if (!user || user.password !== input.password) {
+    if (!user) {
       return null
     }
 
-    const accessToken = randomUUID()
-    const refreshToken = randomUUID()
+    const isValidPassword = await compare(input.password, user.password)
+    if (!isValidPassword) {
+      return null
+    }
 
-    await authRepository.createSession({
-      id: randomUUID(),
-      userId: user.id,
-      accessToken,
-      refreshToken,
-    })
-
-    return { accessToken, refreshToken, expiresIn: 60 * 60 * 24 }
-  },
-
-  async refresh(refreshToken: string) {
-    const nextAccessToken = randomUUID()
-    const accessToken = await authRepository.refreshAccessToken(refreshToken, nextAccessToken)
-    if (!accessToken) return null
-    return { accessToken, expiresIn: 60 * 60 * 24 }
-  },
-
-  async getAuthenticatedUser(accessToken: string) {
-    const user = await authRepository.findUserByAccessToken(accessToken)
-    if (!user) return null
-    const { password: _password, ...publicUser } = user
-    return { ...publicUser, createdAt: publicUser.createdAt.toISOString() }
+    return {
+      id: user.id,
+      email: user.email,
+    }
   },
 }

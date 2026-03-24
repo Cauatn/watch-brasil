@@ -36,9 +36,9 @@ export async function authRoute(app: FastifyInstance) {
       security: [],
     },
     handler: async (request, reply) => {
-      const tokens = await authService.login(request.body);
+      const authenticatedUser = await authService.login(request.body);
 
-      if (!tokens) {
+      if (!authenticatedUser) {
         return sendError(reply, {
           statusCode: 401,
           error: "Credenciais invalidas",
@@ -46,7 +46,29 @@ export async function authRoute(app: FastifyInstance) {
         });
       }
 
-      return reply.send(tokens);
+      const accessToken = await reply.jwtSign(
+        {
+          id: authenticatedUser.id,
+          email: authenticatedUser.email,
+          type: "access",
+        },
+        { expiresIn: "15m" },
+      );
+
+      const refreshToken = await reply.jwtSign(
+        {
+          id: authenticatedUser.id,
+          email: authenticatedUser.email,
+          type: "refresh",
+        },
+        { expiresIn: "7d" },
+      );
+
+      return reply.send({
+        accessToken,
+        refreshToken,
+        expiresIn: 60 * 15,
+      });
     },
   });
 
@@ -58,16 +80,37 @@ export async function authRoute(app: FastifyInstance) {
       security: [],
     },
     handler: async (request, reply) => {
-      const refreshed = await authService.refresh(request.body.refreshToken);
-      if (!refreshed) {
+      try {
+        const payload = await app.jwt.verify<{
+          id: string;
+          email: string;
+          type: "access" | "refresh";
+        }>(request.body.refreshToken);
+
+        if (payload.type !== "refresh") {
+          return sendError(reply, {
+            statusCode: 401,
+            error: "Token invalido ou ausente",
+            code: "UNAUTHORIZED",
+          });
+        }
+
+        const accessToken = await reply.jwtSign(
+          { id: payload.id, email: payload.email, type: "access" },
+          { expiresIn: "15m" },
+        );
+
+        return reply.send({
+          accessToken,
+          expiresIn: 60 * 15,
+        });
+      } catch {
         return sendError(reply, {
           statusCode: 401,
           error: "Token invalido ou ausente",
           code: "UNAUTHORIZED",
         });
       }
-
-      return reply.send(refreshed);
     },
   });
 }
