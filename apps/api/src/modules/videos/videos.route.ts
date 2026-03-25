@@ -30,7 +30,7 @@ export async function videosRoute(app: FastifyInstance) {
       summary: "Fazer upload de um video",
       body: createVideoSchema,
     },
-    preHandler: app.authenticate,
+    preHandler: app.authorize(["admin"]),
     handler: async (request, reply) => {
       const video = await videosService.create({
         actorId: request.currentUser!.id,
@@ -68,7 +68,7 @@ export async function videosRoute(app: FastifyInstance) {
       params: videoParamsSchema,
       body: updateVideoSchema,
     },
-    preHandler: app.authenticate,
+    preHandler: app.authorize(["admin"]),
     handler: async (request, reply) => {
       const result = await videosService.update({
         videoId: request.params.id,
@@ -101,7 +101,7 @@ export async function videosRoute(app: FastifyInstance) {
       summary: "Remover video e arquivo do disco",
       params: videoParamsSchema,
     },
-    preHandler: app.authenticate,
+    preHandler: app.authorize(["admin"]),
     handler: async (request, reply) => {
       const result = await videosService.delete({
         videoId: request.params.id,

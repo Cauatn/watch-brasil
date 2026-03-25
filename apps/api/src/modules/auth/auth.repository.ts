@@ -34,6 +34,7 @@ export const authRepository = {
         id: input.id,
         name: input.name,
         email: input.email,
+        role: "user",
         createdAt: now.toISOString(),
       } satisfies PublicUser,
     };

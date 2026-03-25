@@ -1,11 +1,14 @@
+import type { FastifyReply, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
 import { z } from "zod";
 import { usersRepository } from "../modules/users/users.repository.js";
+import type { UserRole } from "../shared/types/index.js";
 import { sendError } from "../shared/utils/index.js";
 
 const jwtPayloadSchema = z.object({
   id: z.string().min(1),
   email: z.email(),
+  role: z.enum(["admin", "user"]),
   type: z.enum(["access", "refresh"]),
 });
 
@@ -16,46 +19,68 @@ const jwtPayloadSchema = z.object({
 export const authGuardPlugin = fp(async (fastify) => {
   fastify.decorateRequest("currentUser", null);
 
-  fastify.decorate("authenticate", async function authenticate(request, reply) {
-    try {
-      const verifiedPayload = await request.jwtVerify();
-      const parsedPayload = jwtPayloadSchema.safeParse(verifiedPayload);
+  fastify.decorate(
+    "authenticate",
+    async function authenticate(request: FastifyRequest, reply: FastifyReply) {
+      try {
+        const verifiedPayload = await request.jwtVerify();
+        const parsedPayload = jwtPayloadSchema.safeParse(verifiedPayload);
 
-      if (!parsedPayload.success) {
+        if (!parsedPayload.success) {
+          return sendError(reply, {
+            statusCode: 401,
+            error: "Token invalido ou ausente",
+            code: "UNAUTHORIZED",
+          });
+        }
+
+        const payload = parsedPayload.data;
+
+        if (payload.type !== "access") {
+          return sendError(reply, {
+            statusCode: 401,
+            error: "Token invalido ou ausente",
+            code: "UNAUTHORIZED",
+          });
+        }
+
+        const user = await usersRepository.findById(payload.id);
+
+        if (!user) {
+          return sendError(reply, {
+            statusCode: 401,
+            error: "Token invalido ou ausente",
+            code: "UNAUTHORIZED",
+          });
+        }
+
+        request.currentUser = user;
+      } catch {
         return sendError(reply, {
           statusCode: 401,
           error: "Token invalido ou ausente",
           code: "UNAUTHORIZED",
         });
       }
+    },
+  );
 
-      const payload = parsedPayload.data;
+  fastify.decorate("authorize", function authorize(allowedRoles: UserRole[]) {
+    return async function (request: FastifyRequest, reply: FastifyReply) {
+      await fastify.authenticate(request, reply);
 
-      if (payload.type !== "access") {
+      if (reply.sent) return;
+
+      if (
+        !request.currentUser ||
+        !allowedRoles.includes(request.currentUser.role)
+      ) {
         return sendError(reply, {
-          statusCode: 401,
-          error: "Token invalido ou ausente",
-          code: "UNAUTHORIZED",
+          statusCode: 403,
+          error: "Sem permissao para esta acao",
+          code: "FORBIDDEN",
         });
       }
-
-      const user = await usersRepository.findById(payload.id);
-
-      if (!user) {
-        return sendError(reply, {
-          statusCode: 401,
-          error: "Token invalido ou ausente",
-          code: "UNAUTHORIZED",
-        });
-      }
-
-      request.currentUser = user;
-    } catch {
-      return sendError(reply, {
-        statusCode: 401,
-        error: "Token invalido ou ausente",
-        code: "UNAUTHORIZED",
-      });
-    }
+    };
   });
 });

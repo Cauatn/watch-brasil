@@ -50,6 +50,7 @@ export async function authRoute(app: FastifyInstance) {
         {
           id: authenticatedUser.id,
           email: authenticatedUser.email,
+          role: authenticatedUser.role,
           type: "access",
         },
         { expiresIn: "15m" },
@@ -59,6 +60,7 @@ export async function authRoute(app: FastifyInstance) {
         {
           id: authenticatedUser.id,
           email: authenticatedUser.email,
+          role: authenticatedUser.role,
           type: "refresh",
         },
         { expiresIn: "7d" },
@@ -84,6 +86,7 @@ export async function authRoute(app: FastifyInstance) {
         const payload = await app.jwt.verify<{
           id: string;
           email: string;
+          role: string;
           type: "access" | "refresh";
         }>(request.body.refreshToken);
 
@@ -96,7 +99,7 @@ export async function authRoute(app: FastifyInstance) {
         }
 
         const accessToken = await reply.jwtSign(
-          { id: payload.id, email: payload.email, type: "access" },
+          { id: payload.id, email: payload.email, role: payload.role, type: "access" },
           { expiresIn: "15m" },
         );
 

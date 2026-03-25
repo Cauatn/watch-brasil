@@ -85,7 +85,7 @@ function logout() {
               </RouterLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          <SidebarMenuItem>
+          <SidebarMenuItem v-if="authStore.isAdmin">
             <SidebarMenuButton
               as-child
               :tooltip="t('sidebar.addMovie')"
