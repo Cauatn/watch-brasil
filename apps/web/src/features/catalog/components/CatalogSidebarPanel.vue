@@ -68,7 +68,7 @@ function logout() {
     </RouterLink>
   </SidebarHeader>
 
-  <SidebarContent class="px-2 py-4">
+  <SidebarContent class="px-2 py-4 group-data-[collapsible=icon]:px-0">
     <SidebarGroup>
       <SidebarGroupContent>
         <SidebarMenu>
