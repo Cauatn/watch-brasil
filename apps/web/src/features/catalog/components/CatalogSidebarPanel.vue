@@ -54,17 +54,17 @@ function logout() {
 </script>
 
 <template>
-  <SidebarHeader class="border-b border-white/10 px-4 py-5">
+  <SidebarHeader class="border-b border-white/10 px-4 py-5 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:py-3">
     <RouterLink
       to="/"
-      class="flex items-center gap-3 font-semibold tracking-tight text-white"
+      class="flex items-center gap-3 font-semibold tracking-tight text-white group-data-[collapsible=icon]:justify-center"
     >
       <span
-        class="flex size-10 items-center justify-center rounded-lg bg-[#E50914] text-white shadow-lg shadow-red-900/40"
+        class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[#E50914] text-white shadow-lg shadow-red-900/40 group-data-[collapsible=icon]:size-8"
       >
-        <Clapperboard class="size-5" />
+        <Clapperboard class="size-5 group-data-[collapsible=icon]:size-4" />
       </span>
-      <span class="text-lg leading-none">{{ t("brand.title") }}</span>
+      <span class="text-lg leading-none group-data-[collapsible=icon]:hidden">{{ t("brand.title") }}</span>
     </RouterLink>
   </SidebarHeader>
 
@@ -143,34 +143,32 @@ function logout() {
     </SidebarGroup>
   </SidebarContent>
 
-  <SidebarFooter class="border-t border-white/10 p-3">
-    <div class="flex items-center gap-3 rounded-xl bg-white/5 p-2">
-      <Avatar class="size-10 border border-white/10">
-        <AvatarFallback class="bg-white/10 text-xs text-white">
-          {{ initials }}
-        </AvatarFallback>
-      </Avatar>
-      <div class="min-w-0 flex-1">
-        <p class="truncate text-sm font-medium text-white">
-          {{ authStore.user?.name ?? t("sidebar.user") }}
-        </p>
-        <p class="truncate text-xs text-white/50">
-          {{ authStore.user?.email }}
-        </p>
-      </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          class="inline-flex size-8 shrink-0 items-center justify-center rounded-md text-white/70 hover:bg-white/10 hover:text-white"
-        >
-          <MoreVertical class="size-4" />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" class="w-44">
-          <DropdownMenuItem @click="logout">
-            <LogOut class="mr-2 size-4" />
-            {{ t("sidebar.logout") }}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+  <SidebarFooter class="border-t border-white/10 p-3 group-data-[collapsible=icon]:p-2">
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        class="flex w-full items-center gap-3 rounded-xl bg-white/5 p-2 text-left hover:bg-white/10 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:p-0"
+      >
+        <Avatar class="size-10 shrink-0 border border-white/10 group-data-[collapsible=icon]:size-8">
+          <AvatarFallback class="bg-white/10 text-xs text-white">
+            {{ initials }}
+          </AvatarFallback>
+        </Avatar>
+        <div class="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
+          <p class="truncate text-sm font-medium text-white">
+            {{ authStore.user?.name ?? t("sidebar.user") }}
+          </p>
+          <p class="truncate text-xs text-white/50">
+            {{ authStore.user?.email }}
+          </p>
+        </div>
+        <MoreVertical class="size-4 shrink-0 text-white/70 group-data-[collapsible=icon]:hidden" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" class="w-44">
+        <DropdownMenuItem @click="logout">
+          <LogOut class="mr-2 size-4" />
+          {{ t("sidebar.logout") }}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   </SidebarFooter>
 </template>
