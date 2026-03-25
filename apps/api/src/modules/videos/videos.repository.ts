@@ -1,7 +1,7 @@
 import { and, count, desc, eq, sql } from "drizzle-orm";
-import { db } from "../../shared/db/client.js";
-import { videosTable } from "../../shared/db/schema.js";
 import type { VideoStatus } from "../../shared/types/index.js";
+import { videosTable } from "../../db/schema.js";
+import { db } from "../../db/client.js";
 
 export type VideoRecord = {
   id: string;

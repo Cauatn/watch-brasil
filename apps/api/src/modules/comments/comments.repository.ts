@@ -1,6 +1,6 @@
 import { count, desc, eq } from "drizzle-orm";
-import { db } from "../../shared/db/client.js";
-import { commentsTable } from "../../shared/db/schema.js";
+import { db } from "../../db/client.js";
+import { commentsTable } from "../../db/schema.js";
 
 export type CommentRecord = {
   id: string;

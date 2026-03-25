@@ -4,8 +4,8 @@ import { hash } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 
-import { db } from "../shared/db/client.js";
-import { commentsTable, usersTable, videosTable } from "../shared/db/schema.js";
+import { db } from "../db/client.js";
+import { commentsTable, usersTable, videosTable } from "../db/schema.js";
 
 type UserRole = "admin" | "user";
 

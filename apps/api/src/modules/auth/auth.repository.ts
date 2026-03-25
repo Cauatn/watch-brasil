@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
-import { db } from "../../shared/db/client.js";
-import { usersTable } from "../../shared/db/schema.js";
+import { db } from "../../db/client.js";
+import { usersTable } from "../../db/schema.js";
 import type { PublicUser } from "../../shared/types/index.js";
 
 export const authRepository = {
