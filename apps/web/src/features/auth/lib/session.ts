@@ -13,8 +13,7 @@ function setCookie(name: string, value: string, maxAge: number) {
 }
 
 export function getAccessToken(): string | null {
-  const v = cookies.get(ACCESS_KEY);
-  return typeof v === "string" ? v : null;
+  return cookies.get(ACCESS_KEY);
 }
 
 export function setTokens(tokens: {
