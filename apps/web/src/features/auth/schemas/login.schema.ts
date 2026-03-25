@@ -1,12 +1,14 @@
 import { toTypedSchema } from "@vee-validate/zod";
 import { z } from "zod";
 
-const loginShape = z.object({
-  email: z.string().email(),
-  password: z.string().min(1),
-});
+function fieldString(v: unknown) {
+  return v == null ? "" : v;
+}
 
-export type LoginFormValues = z.infer<typeof loginShape>;
+export type LoginFormValues = {
+  email: string;
+  password: string;
+};
 
 export type LoginSchemaMessages = {
   emailInvalid: string;
@@ -16,8 +18,14 @@ export type LoginSchemaMessages = {
 export function buildLoginValidationSchema(messages: LoginSchemaMessages) {
   return toTypedSchema(
     z.object({
-      email: z.string().email(messages.emailInvalid),
-      password: z.string().min(1, messages.passwordRequired),
+      email: z.preprocess(
+        fieldString,
+        z.string().email(messages.emailInvalid),
+      ),
+      password: z.preprocess(
+        fieldString,
+        z.string().min(1, messages.passwordRequired),
+      ),
     }),
   );
 }
