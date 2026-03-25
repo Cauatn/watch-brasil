@@ -1,4 +1,4 @@
-import { authService } from "@/features/auth/services/auth.service";
+import { fetchMe, login } from "@/features/auth/services/auth";
 import {
   clearSession,
   getAccessToken,
@@ -23,7 +23,7 @@ export const useAuthStore = defineStore("auth", {
         return;
       }
       try {
-        this.user = await authService.fetchMe();
+        this.user = await fetchMe();
       } catch {
         clearSession();
         this.user = null;
@@ -33,9 +33,9 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async login(payload: LoginPayload) {
-      const tokens = await authService.login(payload);
+      const tokens = await login(payload);
       setTokens(tokens);
-      this.user = await authService.fetchMe();
+      this.user = await fetchMe();
     },
 
     logout() {

@@ -25,14 +25,14 @@ import {
   signupValidationSchema,
   type SignupFormValues,
 } from "@/features/auth/schemas/signup.schema";
-import { authService } from "@/features/auth/services/auth.service";
+import { register } from "@/features/auth/services/auth";
 
 const router = useRouter();
 
 const onSubmit = (async (values) => {
   const { name, email, password } = values as SignupFormValues;
   try {
-    await authService.register({ name, email, password });
+    await register({ name, email, password });
     toast.success("Conta criada com sucesso");
     await router.push("/signin");
   } catch (e) {
