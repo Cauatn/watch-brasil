@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import type { AppLocale } from "@/core/i18n"
-import { persistLocale } from "@/core/i18n"
-import { Languages } from "lucide-vue-next"
-import { useI18n } from "vue-i18n"
+} from "@/components/ui/dropdown-menu";
+import type { AppLocale } from "i18n";
+import { persistLocale } from "i18n";
+import { Languages } from "lucide-vue-next";
+import { useI18n } from "vue-i18n";
 
-const { locale, t } = useI18n()
+const { locale, t } = useI18n();
 
 function setLocale(next: AppLocale) {
-  locale.value = next
-  persistLocale(next)
+  locale.value = next;
+  persistLocale(next);
 }
 </script>
 
