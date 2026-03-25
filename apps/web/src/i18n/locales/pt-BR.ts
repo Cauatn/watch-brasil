@@ -48,6 +48,26 @@ export default {
     errorValidation: "Dados inválidos. Confira as URLs e o título.",
     errorGeneric: "Não foi possível cadastrar o filme",
   },
+  watch: {
+    loadingTitle: "Assistir",
+    loadError: "Não foi possível carregar este título.",
+    openOriginal: "Abrir fonte original",
+    embedUnavailable:
+      "Este formato não pode ser reproduzido aqui. Abra o link original.",
+  },
+  comments: {
+    title: "Comentários",
+    placeholder: "Escreva um comentário…",
+    submit: "Publicar",
+    posting: "Publicando…",
+    empty: "Nenhum comentário ainda. Seja o primeiro.",
+    posted: "Comentário publicado",
+    errorValidation: "Revise o texto (1–1000 caracteres).",
+    errorGeneric: "Não foi possível publicar o comentário",
+    deleteError: "Não foi possível remover o comentário",
+    delete: "Remover comentário",
+    anonymous: "Usuário",
+  },
   locale: {
     label: "Idioma",
     pt: "Português",

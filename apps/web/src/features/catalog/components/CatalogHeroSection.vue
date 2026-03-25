@@ -3,16 +3,18 @@ import { Button } from "@/components/ui/button"
 import type { CatalogVideo } from "@/features/catalog/services/video"
 import { Play } from "lucide-vue-next"
 import { useI18n } from "vue-i18n"
+import { useRouter } from "vue-router"
 
 const { t } = useI18n()
+const router = useRouter()
 
-const props = defineProps<{
+defineProps<{
   featured: CatalogVideo | null
   spotlight: CatalogVideo | null
 }>()
 
 function openWatch(v: CatalogVideo) {
-  window.open(v.url, "_blank", "noopener,noreferrer")
+  router.push({ name: "watch", params: { id: v.id } })
 }
 </script>
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { CatalogVideo } from "@/features/catalog/services/video"
 import { useI18n } from "vue-i18n"
+import { useRouter } from "vue-router"
 
 defineProps<{
   title: string
@@ -8,9 +9,10 @@ defineProps<{
 }>()
 
 const { t } = useI18n()
+const router = useRouter()
 
 function openWatch(v: CatalogVideo) {
-  window.open(v.url, "_blank", "noopener,noreferrer")
+  router.push({ name: "watch", params: { id: v.id } })
 }
 </script>
 

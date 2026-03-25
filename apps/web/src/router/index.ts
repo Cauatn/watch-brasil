@@ -1,6 +1,7 @@
 import type { UserRole } from "@/features/auth/types/auth";
 import AddVideoPage from "@/features/catalog/pages/AddVideoPage.vue";
 import CatalogPage from "@/features/catalog/pages/CatalogPage.vue";
+import WatchPage from "@/features/catalog/pages/WatchPage.vue";
 import SignInPage from "@/features/auth/pages/SignInPage.vue";
 import { useAuthStore } from "@/stores/auth.store";
 import { createRouter, createWebHistory } from "vue-router";
@@ -20,6 +21,12 @@ export const router = createRouter({
       path: "/",
       name: "catalog",
       component: CatalogPage,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/watch/:id",
+      name: "watch",
+      component: WatchPage,
       meta: { requiresAuth: true },
     },
     {

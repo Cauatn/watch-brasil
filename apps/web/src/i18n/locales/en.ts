@@ -48,6 +48,26 @@ export default {
     errorValidation: "Invalid data. Check URLs and title.",
     errorGeneric: "Could not add the movie",
   },
+  watch: {
+    loadingTitle: "Watch",
+    loadError: "Could not load this title.",
+    openOriginal: "Open source",
+    embedUnavailable:
+      "This format cannot be played inline here. Open the original link.",
+  },
+  comments: {
+    title: "Comments",
+    placeholder: "Write a comment…",
+    submit: "Post",
+    posting: "Posting…",
+    empty: "No comments yet. Be the first.",
+    posted: "Comment posted",
+    errorValidation: "Check the comment text (1–1000 characters).",
+    errorGeneric: "Could not post the comment",
+    deleteError: "Could not remove the comment",
+    delete: "Remove comment",
+    anonymous: "User",
+  },
   locale: {
     label: "Language",
     pt: "Portuguese",
