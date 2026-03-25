@@ -1,30 +1,45 @@
 <script setup lang="ts">
 import { Skeleton } from "@/components/ui/skeleton";
+import { refDebounced } from "@vueuse/core";
 import CatalogShell from "../components/CatalogShell.vue";
 import CatalogHeroSection from "../components/CatalogHeroSection.vue";
 import CatalogTopBar from "../components/CatalogTopBar.vue";
 import MoviePosterStrip from "../components/MoviePosterStrip.vue";
+import { useCatalogSearchQuery } from "../composables/use-catalog-search-query";
 import { useVideosQuery } from "../composables/use-videos-query";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 const search = ref("");
+const debouncedSearch = refDebounced(search, 300);
 
 const { data, isPending, isError, error, refetch } = useVideosQuery();
 
+const {
+  data: searchData,
+  isFetching: searchFetching,
+} = useCatalogSearchQuery(debouncedSearch);
+
 const list = computed(() => data.value?.data ?? []);
+const searchResults = computed(() => searchData.value?.data ?? []);
 
-const filtered = computed(() => {
-  const q = search.value.trim().toLowerCase();
-  if (!q) return list.value;
-  return list.value.filter((v) => v.title.toLowerCase().includes(q));
-});
+const searchStale = computed(
+  () =>
+    search.value.trim().length > 0 &&
+    search.value.trim() !== debouncedSearch.value.trim(),
+);
 
-const featured = computed(() => filtered.value[0] ?? null);
-const spotlight = computed(() => filtered.value[1] ?? null);
+const searchDropdownPending = computed(
+  () =>
+    searchStale.value ||
+    (Boolean(debouncedSearch.value.trim()) && searchFetching.value),
+);
 
-const afterHero = computed(() => filtered.value.slice(2));
+const featured = computed(() => list.value[0] ?? null);
+const spotlight = computed(() => list.value[1] ?? null);
+
+const afterHero = computed(() => list.value.slice(2));
 const recommended = computed(() => afterHero.value.slice(0, 12));
 const trending = computed(() => afterHero.value.slice(12, 24));
 const rest = computed(() => afterHero.value.slice(24));
@@ -32,7 +47,11 @@ const rest = computed(() => afterHero.value.slice(24));
 
 <template>
   <CatalogShell>
-    <CatalogTopBar v-model:search="search" />
+    <CatalogTopBar
+      v-model:search="search"
+      :search-results="searchResults"
+      :search-pending="searchDropdownPending"
+    />
     <div class="flex flex-1 flex-col gap-10 overflow-auto p-4 pb-16 md:p-8">
         <div v-if="isPending" class="space-y-8">
           <div class="grid gap-4 lg:grid-cols-[1.4fr_0.75fr]">
@@ -90,15 +109,10 @@ const rest = computed(() => afterHero.value.slice(24));
           />
 
           <div
-            v-if="!filtered.length"
+            v-if="!list.length"
             class="rounded-2xl border border-dashed border-white/15 py-20 text-center text-white/50"
           >
-            <template v-if="search.trim()">
-              {{ t("catalog.emptySearch", { query: search.trim() }) }}
-            </template>
-            <template v-else>
-              {{ t("catalog.emptyCatalog") }}
-            </template>
+            {{ t("catalog.emptyCatalog") }}
           </div>
         </template>
     </div>
