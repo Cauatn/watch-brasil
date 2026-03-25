@@ -1,31 +1,17 @@
 import { toTypedSchema } from "@vee-validate/zod";
+import type { ValidationTranslate } from "@/lib/validation-translate";
 import { z } from "zod";
-
-function fieldString(v: unknown) {
-  return v == null ? "" : v;
-}
 
 export type LoginFormValues = {
   email: string;
   password: string;
 };
 
-export type LoginSchemaMessages = {
-  emailInvalid: string;
-  passwordRequired: string;
-};
-
-export function buildLoginValidationSchema(messages: LoginSchemaMessages) {
+export function buildLoginValidationSchema(t: ValidationTranslate) {
   return toTypedSchema(
     z.object({
-      email: z.preprocess(
-        fieldString,
-        z.string().email(messages.emailInvalid),
-      ),
-      password: z.preprocess(
-        fieldString,
-        z.string().min(1, messages.passwordRequired),
-      ),
+      email: z.email(t("auth.login.validation.emailInvalid")),
+      password: z.string().min(1, t("auth.login.validation.passwordRequired")),
     }),
   );
 }

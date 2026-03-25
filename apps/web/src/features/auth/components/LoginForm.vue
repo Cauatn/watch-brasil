@@ -39,12 +39,7 @@ const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 
-const loginValidationSchema = computed(() =>
-  buildLoginValidationSchema({
-    emailInvalid: t("auth.login.validation.emailInvalid"),
-    passwordRequired: t("auth.login.validation.passwordRequired"),
-  }),
-);
+const loginValidationSchema = computed(() => buildLoginValidationSchema(t));
 
 function redirectAfterLogin() {
   const raw = route.query.redirect;
@@ -58,8 +53,9 @@ function redirectAfterLogin() {
 const onSubmit = (async (values) => {
   const { email, password } = values as LoginFormValues;
   try {
-    await authStore.login({ email, password });
-    toast.success(t("auth.login.toastSuccess"));
+    await authStore
+      .login({ email, password })
+      .then(() => toast.success(t("auth.login.toastSuccess")));
     await router.push(redirectAfterLogin());
   } catch (e) {
     if (isAxiosError(e) && e.response?.status === 401) {
@@ -85,6 +81,7 @@ const onSubmit = (async (values) => {
           :key="locale"
           v-slot="{ isSubmitting }"
           :validation-schema="loginValidationSchema"
+          :initial-values="{ email: '', password: '' }"
           :on-submit="onSubmit"
           as="form"
           class="space-y-4"
