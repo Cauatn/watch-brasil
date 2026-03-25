@@ -11,7 +11,8 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --passWithNoTests",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx src/db/seed.ts"
   },
   "dependencies": {
     "@fastify/aws-lambda": "^6.4.0",
