@@ -9,7 +9,7 @@ export type AppLocale = "pt-BR" | "en";
 function readStoredLocale(): AppLocale {
   if (typeof localStorage === "undefined") return "pt-BR";
   const raw = localStorage.getItem(STORAGE_KEY);
-  if (raw === "en" || raw === "pt-BR") return raw;
+  if (raw === "en") return "en";
   return "pt-BR";
 }
 

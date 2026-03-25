@@ -28,6 +28,9 @@ export default {
     retry: "Try again",
     emptySearch: 'No results for "{query}".',
     emptyCatalog: "No movies in the catalog yet.",
+    searchLoading: "Searching…",
+    searchNoResults: "No movies match your search.",
+    searchResultsLabel: "Search results",
   },
   addVideo: {
     pageTitle: "Add to catalog",
@@ -72,6 +75,8 @@ export default {
     label: "Language",
     pt: "Portuguese",
     en: "English",
+    namePt: "Português",
+    nameEn: "English",
   },
   auth: {
     login: {

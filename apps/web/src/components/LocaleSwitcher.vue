@@ -33,6 +33,10 @@ const currentFlag = computed(() =>
   locale.value === "pt-BR" ? "\u{1F1E7}\u{1F1F7}" : "\u{1F1FA}\u{1F1F8}",
 );
 
+const currentLabel = computed(() =>
+  locale.value === "pt-BR" ? t("locale.namePt") : t("locale.nameEn"),
+);
+
 function setLocale(next: AppLocale) {
   locale.value = next;
   persistLocale(next);
@@ -47,12 +51,15 @@ function setLocale(next: AppLocale) {
         variant="ghost"
         size="sm"
         :class="['font-normal', triggerClass]"
-        :aria-label="t('locale.label')"
+        :aria-label="`${t('locale.label')}: ${currentLabel}`"
       >
         <span class="text-lg leading-none" aria-hidden="true">{{
           currentFlag
         }}</span>
-        <ChevronDown class="size-3.5 opacity-70" />
+        <span class="max-w-[9rem] truncate text-sm font-medium">{{
+          currentLabel
+        }}</span>
+        <ChevronDown class="size-3.5 shrink-0 opacity-70" />
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end" class="w-48">
@@ -64,13 +71,13 @@ function setLocale(next: AppLocale) {
           <span class="text-base leading-none" aria-hidden="true"
             >&#x1F1E7;&#x1F1F7;</span
           >
-          <span>{{ t("locale.pt") }}</span>
+          <span>{{ t("locale.namePt") }}</span>
         </DropdownMenuRadioItem>
         <DropdownMenuRadioItem value="en" class="gap-2">
           <span class="text-base leading-none" aria-hidden="true"
             >&#x1F1FA;&#x1F1F8;</span
           >
-          <span>{{ t("locale.en") }}</span>
+          <span>{{ t("locale.nameEn") }}</span>
         </DropdownMenuRadioItem>
       </DropdownMenuRadioGroup>
     </DropdownMenuContent>

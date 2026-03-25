@@ -28,6 +28,9 @@ export default {
     retry: "Tentar de novo",
     emptySearch: 'Nenhum resultado para "{query}".',
     emptyCatalog: "Ainda não há filmes cadastrados.",
+    searchLoading: "Buscando…",
+    searchNoResults: "Nenhum filme encontrado com esse termo.",
+    searchResultsLabel: "Resultados da busca",
   },
   addVideo: {
     pageTitle: "Adicionar ao catálogo",
@@ -72,6 +75,8 @@ export default {
     label: "Idioma",
     pt: "Português",
     en: "English",
+    namePt: "Português",
+    nameEn: "English",
   },
   auth: {
     login: {
