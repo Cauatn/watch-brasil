@@ -53,4 +53,4 @@ export default {
     pt: "Português",
     en: "English",
   },
-} as const
+} as const;
