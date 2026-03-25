@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppShell from '@/layouts/AppShell.vue'
-import { Toaster } from '@/components/ui/sonner'
+import AppShell from "@/components/layouts/AppShell.vue";
+import { Toaster } from "@/components/ui/sonner";
 </script>
 
 <template>
