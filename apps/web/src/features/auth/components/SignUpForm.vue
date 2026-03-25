@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { isAxiosError } from "axios";
 import type { SubmissionHandler } from "vee-validate";
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { toast } from "vue-sonner";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,25 +23,36 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-  signupValidationSchema,
+  buildSignupValidationSchema,
   type SignupFormValues,
 } from "@/features/auth/schemas/signup.schema";
 import { register } from "@/features/auth/services/auth";
 
+const { t, locale } = useI18n();
 const router = useRouter();
+
+const signupValidationSchema = computed(() =>
+  buildSignupValidationSchema({
+    nameRequired: t("auth.signup.validation.nameRequired"),
+    emailInvalid: t("auth.signup.validation.emailInvalid"),
+    passwordMin: t("auth.signup.validation.passwordMin"),
+    confirmRequired: t("auth.signup.validation.confirmRequired"),
+    passwordsMismatch: t("auth.signup.validation.passwordsMismatch"),
+  }),
+);
 
 const onSubmit = (async (values) => {
   const { name, email, password } = values as SignupFormValues;
   try {
     await register({ name, email, password });
-    toast.success("Conta criada com sucesso");
+    toast.success(t("auth.signup.toastSuccess"));
     await router.push("/signin");
   } catch (e) {
     if (isAxiosError(e) && e.response?.status === 409) {
-      toast.error("E-mail já cadastrado");
+      toast.error(t("auth.signup.toastConflict"));
       return;
     }
-    toast.error("Não foi possível criar conta");
+    toast.error(t("auth.signup.toastGeneric"));
   }
 }) as SubmissionHandler;
 </script>
@@ -48,14 +60,15 @@ const onSubmit = (async (values) => {
 <template>
   <Card>
     <CardHeader>
-      <CardTitle>Criar conta</CardTitle>
+      <CardTitle>{{ t("auth.signup.title") }}</CardTitle>
       <CardDescription>
-        Informe seus dados abaixo para criar sua conta
+        {{ t("auth.signup.description") }}
       </CardDescription>
     </CardHeader>
 
     <CardContent>
       <Form
+        :key="locale"
         v-slot="{ isSubmitting }"
         :validation-schema="signupValidationSchema"
         :initial-values="{
@@ -70,12 +83,12 @@ const onSubmit = (async (values) => {
       >
         <FormField v-slot="{ componentField }" name="name">
           <FormItem>
-            <FormLabel>Nome</FormLabel>
+            <FormLabel>{{ t("auth.signup.name") }}</FormLabel>
             <FormControl>
               <Input
                 type="text"
                 autocomplete="name"
-                placeholder="John Doe"
+                :placeholder="t('auth.signup.namePlaceholder')"
                 v-bind="componentField"
               />
             </FormControl>
@@ -85,12 +98,12 @@ const onSubmit = (async (values) => {
 
         <FormField v-slot="{ componentField }" name="email">
           <FormItem>
-            <FormLabel>E-mail</FormLabel>
+            <FormLabel>{{ t("auth.signup.email") }}</FormLabel>
             <FormControl>
               <Input
                 type="email"
                 autocomplete="email"
-                placeholder="voce@exemplo.com"
+                :placeholder="t('auth.signup.emailPlaceholder')"
                 v-bind="componentField"
               />
             </FormControl>
@@ -100,12 +113,12 @@ const onSubmit = (async (values) => {
 
         <FormField v-slot="{ componentField }" name="password">
           <FormItem>
-            <FormLabel>Senha</FormLabel>
+            <FormLabel>{{ t("auth.signup.password") }}</FormLabel>
             <FormControl>
               <Input
                 type="password"
                 autocomplete="new-password"
-                placeholder="Sua senha"
+                :placeholder="t('auth.signup.passwordPlaceholder')"
                 v-bind="componentField"
               />
             </FormControl>
@@ -115,12 +128,12 @@ const onSubmit = (async (values) => {
 
         <FormField v-slot="{ componentField }" name="confirmPassword">
           <FormItem>
-            <FormLabel>Confirmar senha</FormLabel>
+            <FormLabel>{{ t("auth.signup.confirmPassword") }}</FormLabel>
             <FormControl>
               <Input
                 type="password"
                 autocomplete="new-password"
-                placeholder="Repita sua senha"
+                :placeholder="t('auth.signup.confirmPasswordPlaceholder')"
                 v-bind="componentField"
               />
             </FormControl>
@@ -130,16 +143,20 @@ const onSubmit = (async (values) => {
 
         <div class="flex flex-col gap-2">
           <Button type="submit" :disabled="isSubmitting">
-            {{ isSubmitting ? "Criando…" : "Criar conta" }}
+            {{
+              isSubmitting
+                ? t("auth.signup.submitting")
+                : t("auth.signup.submit")
+            }}
           </Button>
 
           <p class="text-center text-sm text-muted-foreground">
-            Já tem conta?
+            {{ t("auth.signup.hasAccount") }}
             <RouterLink
               class="underline underline-offset-4 hover:text-foreground"
               to="/signin"
             >
-              Entrar
+              {{ t("auth.signup.signIn") }}
             </RouterLink>
           </p>
         </div>

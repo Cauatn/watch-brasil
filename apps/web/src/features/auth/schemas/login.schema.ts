@@ -1,11 +1,23 @@
 import { toTypedSchema } from "@vee-validate/zod";
 import { z } from "zod";
 
-export const loginFormSchema = z.object({
-  email: z.string().email("E-mail inválido"),
-  password: z.string().min(1, "Informe a senha"),
+const loginShape = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
 });
 
-export type LoginFormValues = z.infer<typeof loginFormSchema>;
+export type LoginFormValues = z.infer<typeof loginShape>;
 
-export const loginValidationSchema = toTypedSchema(loginFormSchema);
+export type LoginSchemaMessages = {
+  emailInvalid: string;
+  passwordRequired: string;
+};
+
+export function buildLoginValidationSchema(messages: LoginSchemaMessages) {
+  return toTypedSchema(
+    z.object({
+      email: z.string().email(messages.emailInvalid),
+      password: z.string().min(1, messages.passwordRequired),
+    }),
+  );
+}

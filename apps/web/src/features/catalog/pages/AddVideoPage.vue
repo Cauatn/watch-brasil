@@ -6,7 +6,7 @@ import { useI18n } from "vue-i18n"
 import { useRouter } from "vue-router"
 import AddVideoForm from "../components/AddVideoForm.vue"
 import CatalogShell from "../components/CatalogShell.vue"
-import LocaleSwitcher from "../components/LocaleSwitcher.vue"
+import LocaleSwitcher from "@/components/LocaleSwitcher.vue"
 
 const router = useRouter()
 const { t } = useI18n()

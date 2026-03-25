@@ -1,77 +1,88 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from "vue"
-import { isAxiosError } from "axios"
-import type { SubmissionHandler } from "vee-validate"
-import { useRoute, useRouter } from "vue-router"
-import { toast } from "vue-sonner"
-import { Button } from "@/components/ui/button"
+import type { HTMLAttributes } from "vue";
+import { isAxiosError } from "axios";
+import type { SubmissionHandler } from "vee-validate";
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
+import { useRoute, useRouter } from "vue-router";
+import { toast } from "vue-sonner";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
+  Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  Form,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
-  loginValidationSchema,
+  buildLoginValidationSchema,
   type LoginFormValues,
-} from "@/features/auth/schemas/login.schema"
-import { cn } from "@/lib/utils"
-import { useAuthStore } from "@/stores/auth.store"
+} from "@/features/auth/schemas/login.schema";
+import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/stores/auth.store";
 
 const props = defineProps<{
-  class?: HTMLAttributes["class"]
-}>()
+  class?: HTMLAttributes["class"];
+}>();
 
-const router = useRouter()
-const route = useRoute()
-const authStore = useAuthStore()
+const { t, locale } = useI18n();
+const router = useRouter();
+const route = useRoute();
+const authStore = useAuthStore();
+
+const loginValidationSchema = computed(() =>
+  buildLoginValidationSchema({
+    emailInvalid: t("auth.login.validation.emailInvalid"),
+    passwordRequired: t("auth.login.validation.passwordRequired"),
+  }),
+);
 
 function redirectAfterLogin() {
-  const raw = route.query.redirect
-  const path = typeof raw === "string" ? raw : null
+  const raw = route.query.redirect;
+  const path = typeof raw === "string" ? raw : null;
   if (path?.startsWith("/") && !path.startsWith("//")) {
-    return path
+    return path;
   }
-  return "/"
+  return "/";
 }
 
 const onSubmit = (async (values) => {
-  const { email, password } = values as LoginFormValues
+  const { email, password } = values as LoginFormValues;
   try {
-    await authStore.login({ email, password })
-    toast.success("Login realizado")
-    await router.push(redirectAfterLogin())
+    await authStore.login({ email, password });
+    toast.success(t("auth.login.toastSuccess"));
+    await router.push(redirectAfterLogin());
   } catch (e) {
     if (isAxiosError(e) && e.response?.status === 401) {
-      toast.error("E-mail ou senha inválidos")
-      return
+      toast.error(t("auth.login.toastInvalid"));
+      return;
     }
-    toast.error("Não foi possível entrar")
+    toast.error(t("auth.login.toastGeneric"));
   }
-}) as SubmissionHandler
+}) as SubmissionHandler;
 </script>
 
 <template>
   <div :class="cn('flex flex-col gap-6', props.class)">
     <Card>
       <CardHeader>
-        <CardTitle>Entrar</CardTitle>
+        <CardTitle>{{ t("auth.login.title") }}</CardTitle>
         <CardDescription>
-          Use seu e-mail e senha para acessar a conta
+          {{ t("auth.login.description") }}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Form
+          :key="locale"
           v-slot="{ isSubmitting }"
           :validation-schema="loginValidationSchema"
           :on-submit="onSubmit"
@@ -80,12 +91,12 @@ const onSubmit = (async (values) => {
         >
           <FormField v-slot="{ componentField }" name="email">
             <FormItem>
-              <FormLabel>E-mail</FormLabel>
+              <FormLabel>{{ t("auth.login.email") }}</FormLabel>
               <FormControl>
                 <Input
                   type="email"
                   autocomplete="email"
-                  placeholder="voce@exemplo.com"
+                  :placeholder="t('auth.login.emailPlaceholder')"
                   v-bind="componentField"
                 />
               </FormControl>
@@ -95,7 +106,7 @@ const onSubmit = (async (values) => {
 
           <FormField v-slot="{ componentField }" name="password">
             <FormItem>
-              <FormLabel>Senha</FormLabel>
+              <FormLabel>{{ t("auth.login.password") }}</FormLabel>
               <FormControl>
                 <Input
                   type="password"
@@ -109,15 +120,19 @@ const onSubmit = (async (values) => {
 
           <div class="flex flex-col gap-2">
             <Button type="submit" :disabled="isSubmitting">
-              {{ isSubmitting ? "Entrando…" : "Entrar" }}
+              {{
+                isSubmitting
+                  ? t("auth.login.submitting")
+                  : t("auth.login.submit")
+              }}
             </Button>
             <p class="text-center text-sm text-muted-foreground">
-              Não tem conta?
+              {{ t("auth.login.noAccount") }}
               <RouterLink
                 class="underline underline-offset-4 hover:text-foreground"
                 to="/signup"
               >
-                Criar conta
+                {{ t("auth.login.createAccount") }}
               </RouterLink>
             </p>
           </div>

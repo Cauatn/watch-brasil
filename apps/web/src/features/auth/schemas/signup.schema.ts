@@ -1,19 +1,33 @@
 import { toTypedSchema } from "@vee-validate/zod";
 import { z } from "zod";
 
-export const signupFormSchema = z
-  .object({
-    name: z.string().min(1, "Informe seu nome"),
-    email: z.string().email("E-mail inválido"),
-    password: z.string().min(8, "A senha deve ter no mínimo 8 caracteres"),
-    confirmPassword: z.string().min(1, "Confirme a senha"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    path: ["confirmPassword"],
-    message: "As senhas não conferem",
-  });
+export type SignupFormValues = {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
 
-export type SignupFormValues = z.infer<typeof signupFormSchema>;
+export type SignupSchemaMessages = {
+  nameRequired: string;
+  emailInvalid: string;
+  passwordMin: string;
+  confirmRequired: string;
+  passwordsMismatch: string;
+};
 
-export const signupValidationSchema = toTypedSchema(signupFormSchema);
-
+export function buildSignupValidationSchema(messages: SignupSchemaMessages) {
+  return toTypedSchema(
+    z
+      .object({
+        name: z.string().min(1, messages.nameRequired),
+        email: z.string().email(messages.emailInvalid),
+        password: z.string().min(8, messages.passwordMin),
+        confirmPassword: z.string().min(1, messages.confirmRequired),
+      })
+      .refine((data) => data.password === data.confirmPassword, {
+        path: ["confirmPassword"],
+        message: messages.passwordsMismatch,
+      }),
+  );
+}

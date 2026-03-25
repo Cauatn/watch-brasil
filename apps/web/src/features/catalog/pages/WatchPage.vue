@@ -7,7 +7,7 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import CatalogShell from "../components/CatalogShell.vue";
-import LocaleSwitcher from "../components/LocaleSwitcher.vue";
+import LocaleSwitcher from "@/components/LocaleSwitcher.vue";
 import VideoCommentsSection from "../components/VideoCommentsSection.vue";
 import { useVideoQuery } from "../composables/use-video-query";
 

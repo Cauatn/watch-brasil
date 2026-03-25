@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Search } from "lucide-vue-next"
 import { useI18n } from "vue-i18n"
-import LocaleSwitcher from "./LocaleSwitcher.vue"
+import LocaleSwitcher from "@/components/LocaleSwitcher.vue"
 
 const search = defineModel<string>("search", { default: "" })
 const { t } = useI18n()
