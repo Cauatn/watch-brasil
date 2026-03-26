@@ -5,6 +5,9 @@ Sistema full-stack para catalogo de videos com autenticacao JWT, comentarios, ta
 > [!WARNING]
 > **Gerenciador de pacotes:** use **Bun** na raiz e nos apps (`bun install`, `bun run`, `bun test`). O monorepo declara `packageManager: bun@...`; evite npm/yarn/pnpm para nao divergir lockfile e scripts.
 
+> [!TIP]
+> **Este e o README principal do monorepo (raiz).** Com `bun run dev` ou o fluxo local descrito abaixo, use no navegador: **frontend** http://localhost:5173 · **API** http://localhost:3333 · **Swagger (OpenAPI, todas as rotas)** http://localhost:3333/docs. Repeticao e notas de Docker ficam na secao [URLs local (referencia rapida)](#urls-local-referencia-rapida) ao final.
+
 ## Acesso rapido (desenvolvimento)
 
 Depois de subir o Postgres, aplicar o schema (`bun run db:push` em `apps/api`) e rodar o seed (`bun run db:seed` em `apps/api`), use:
