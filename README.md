@@ -68,7 +68,7 @@ Referencia rapida do que o projeto cobre frente ao objetivo (tarefas, CRUD, rela
 
 ### Diferencas em relacao ao texto do enunciado
 
-- [x] **Testes unitarios** — na API com **Vitest** e mocks do banco (sem Jest).
+- [x] **Testes unitarios** — implementei na API com **Vitest**, mockando o cliente do banco (sem Jest).
 - [x] **AWS Lambda** — ponto de entrada em [`apps/api/src/lambda.ts`](apps/api/src/lambda.ts) (`@fastify/aws-lambda`); **nao** ha pipeline/IaC pronta — detalhes em `apps/api/README.md` (secao Lambda).
 
 > [!IMPORTANT]
