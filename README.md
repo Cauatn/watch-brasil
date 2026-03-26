@@ -2,9 +2,9 @@
 
 Sistema full-stack para catalogo de videos com autenticacao JWT, comentarios, tarefas e relatorios admin.
 
-## Subir a stack (comando rapido)
+https://github.com/user-attachments/assets/69fa5895-373e-4959-833e-ca323e429cd2
 
-Na **raiz** do repositorio (apos `git clone`) — **nao** rode o Compose de dentro de `apps/api`; o `docker-compose.yml` e os contextos de build (`web` usa a raiz) assumem esse diretorio:
+## Subir a stack (comando rapido)
 
 ```bash
 cd watch-brasil
@@ -23,10 +23,6 @@ yarn workspace api db:seed
 yarn dev
 ```
 
-1. `docker compose up -d postgres jaeger otel-collector` sobe so a infraestrutura (sem ocupar a API em container).
-2. `yarn workspace api db:push` e `yarn workspace api db:seed` preparam o banco para desenvolvimento local.
-3. `yarn dev` roda via Turbo os scripts `dev` de `apps/api` e `apps/web` (backend + frontend locais).
-
 URLs disponiveis nesse fluxo:
 
 - Frontend (Vite): http://localhost:5173
@@ -34,13 +30,10 @@ URLs disponiveis nesse fluxo:
 - Swagger (OpenAPI): http://localhost:3333/docs
 - Jaeger UI: http://localhost:16686
 
-> [!NOTE]
-> Se voce subir a API pelo Compose (`docker compose up -d api`), nao rode `yarn dev` ao mesmo tempo, porque ambos usam a porta `3333` e gera `EADDRINUSE`. Nesse caso, use `yarn dev:web` para subir somente o frontend local.
-
 Na **primeira** execucao, `yarn install` e o build da imagem da API podem demorar alguns minutos (rede + monorepo). Execucoes seguintes ficam mais rapidas com cache do Docker e do Yarn.
 
 > [!WARNING]
-> **Gerenciador de pacotes:** use **Yarn 4** na raiz (`yarn install`, `yarn dev`, `yarn test`). O monorepo declara `packageManager: yarn@4.6.0` (ative com Corepack: `corepack enable`). Commitamos `yarn.lock`; evite misturar gerenciadores no mesmo workspace.
+> **Gerenciador de pacotes:** use **Yarn 4** na raiz (`yarn install`, `yarn dev`, `yarn test`).
 
 ## Acesso rapido (desenvolvimento)
 
@@ -52,9 +45,6 @@ Depois de subir o Postgres, aplicar o schema (`yarn workspace api db:push`) e ro
 | **Usuario** | `user@example.com` | `user12345` | Inicio, catalogo, player, comentarios e **lista pessoal de filmes para assistir**. Sem painel admin e sem tela de adicionar filme. |
 
 A **lista** e onde ficam suas tarefas de ver filmes: ao marcar *assistir filme*, o item fica ligado a um titulo do catalogo e voce abre o streaming a partir dali. Tarefas *gerais* sao lembretes sem filme associado.
-
-> [!TIP]
-> **Este e o README principal do monorepo (raiz).** Com `yarn dev` ou o fluxo local descrito abaixo, use no navegador: **frontend** http://localhost:5173 · **API** http://localhost:3333 · **Swagger (OpenAPI, todas as rotas)** http://localhost:3333/docs. Repeticao e notas de Docker ficam na secao [URLs local (referencia rapida)](#urls-local-referencia-rapida) ao final.
 
 ## Checklist de entrega (enunciado)
 
