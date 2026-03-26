@@ -3,6 +3,7 @@ import LocaleSwitcher from "@/components/LocaleSwitcher.vue";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import type { CatalogVideo } from "@/features/catalog/services/video";
+import TasksSheet from "@/features/tasks/components/TasksSheet.vue";
 import { Search } from "lucide-vue-next";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
@@ -106,6 +107,7 @@ function goToVideo(id: string) {
         </template>
       </div>
     </div>
+    <TasksSheet />
     <LocaleSwitcher />
   </header>
 </template>

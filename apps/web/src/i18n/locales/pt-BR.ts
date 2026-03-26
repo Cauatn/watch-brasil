@@ -132,6 +132,8 @@ export default {
     },
   },
   tasks: {
+    viewTasks: "Ver tarefas",
+    openFullPage: "Abrir lista em página inteira",
     pageTitle: "Sua lista de filmes para assistir",
     pageIntro:
       "As tarefas aqui servem para lembrar quais filmes do catálogo você quer ver. Escolha o tipo “Assistir filme”, selecione o título e abra o streaming pelo botão quando for assistir. “Geral” é só um lembrete, sem filme ligado.",
