@@ -11,7 +11,6 @@ import {
 import TasksPanelContent from "@/features/tasks/components/TasksPanelContent.vue";
 import { ListTodo } from "lucide-vue-next";
 import { useI18n } from "vue-i18n";
-import { RouterLink } from "vue-router";
 
 const { t } = useI18n();
 </script>
@@ -46,14 +45,6 @@ const { t } = useI18n();
         </SheetHeader>
         <div class="min-h-0 w-full flex-1 overflow-y-auto px-4 py-4 sm:px-6">
           <TasksPanelContent stacked />
-        </div>
-        <div class="border-t border-white/10 px-4 py-3 sm:px-6">
-          <RouterLink
-            to="/tasks"
-            class="text-sm font-medium text-[#E50914] hover:underline"
-          >
-            {{ t("tasks.openFullPage") }}
-          </RouterLink>
         </div>
       </div>
     </SheetContent>

@@ -133,7 +133,6 @@ export default {
   },
   tasks: {
     viewTasks: "View tasks",
-    openFullPage: "Open full list page",
     pageTitle: "Your movie watch list",
     pageIntro:
       "Tasks here track which catalog titles you plan to watch. Pick “Watch movie”, choose the title, then open streaming from the button when you watch it. “General” is a note with no movie linked.",
