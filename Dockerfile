@@ -1,24 +1,21 @@
 #!/usr/bin/env dockerfile
 
-# Imagem base oficial com Bun
-FROM oven/bun:1 AS base
+FROM node:22-alpine AS base
 
-# Diretório de trabalho do monorepo
 WORKDIR /workspace
 
-# Copia arquivos essenciais para instalar dependências
-COPY package.json bun.lock turbo.json ./
+RUN corepack enable
+
+COPY package.json yarn.lock .yarnrc.yml turbo.json ./
 COPY apps/api/package.json ./apps/api/package.json
 COPY apps/web/package.json ./apps/web/package.json
+COPY packages ./packages
 
-# Instala dependências de todos os workspaces
-RUN bun install
+RUN --mount=type=cache,target=/root/.yarn/cache \
+    yarn install --immutable
 
-# Copia o restante do repositório
 COPY . .
 
-# Build do monorepo
-RUN bun run build
+RUN yarn run build
 
-# Comando padrão focado em validação de tipos
-CMD ["bun", "run", "check-types"]
+CMD ["yarn", "run", "check-types"]

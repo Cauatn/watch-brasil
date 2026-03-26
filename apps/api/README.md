@@ -14,25 +14,25 @@ O backend do **Watch Brasil** expõe autenticação JWT, perfil do usuário, CRU
 - **Autenticação**: JWT (`@fastify/jwt`) + `bcryptjs`
 - **Observabilidade**: OpenTelemetry + OTLP (opcional, com Jaeger no Compose)
 - **Containerização**: Docker + Docker Compose (na raiz do monorepo)
-- **Gerenciamento de pacotes**: **Bun** (workspace do monorepo)
+- **Gerenciamento de pacotes**: **Yarn 4** (workspace do monorepo; `yarn.lock` na raiz)
 
 > [!WARNING]
-> **Use Bun neste projeto.** O `packageManager` do monorepo é Bun (`bun install`, `bun run`, `bun test`). Evite npm/yarn/pnpm no `apps/api` para não gerar lockfiles ou scripts divergentes.
+> **Use Yarn na raiz do monorepo.** O campo `packageManager` fixa a versão (Corepack). Evite misturar com Bun/npm/pnpm no mesmo workspace.
 
 > [!WARNING]
-> **Dados simulados (`db:seed`).** O script `bun run db:seed` **apaga todos os vídeos e comentários** do banco e recria usuários, vídeos e comentários de demonstração (`src/db/seed.ts`). Use apenas em desenvolvimento. Cada execução redefine o catálogo para o cenário simulado.
+> **Dados simulados (`db:seed`).** O script `yarn workspace api db:seed` **apaga todos os vídeos e comentários** do banco e recria usuários, vídeos e comentários de demonstração (`src/db/seed.ts`). Use apenas em desenvolvimento. Cada execução redefine o catálogo para o cenário simulado.
 
 > [!NOTE]
-> **Testes:** os testes da API usam **`bun:test`** (runner do Bun), **não Jest**. Utilizam `mock.module` para substituir `db/client`; não é necessário PostgreSQL rodando para `bun test` ou `bun run test` na raiz do monorepo.
+> **Testes:** **Vitest**, com `vi.mock` em `db/client`; não é necessário PostgreSQL para `yarn test` na API ou `yarn test` na raiz (Turbo).
 
 > [!TIP]
-> Na raiz do repositório: `bun run test` (Turbo filtra o pacote `api`).
+> Na raiz do repositório: `yarn test` (Turbo filtra o pacote `api`).
 
 ## Pré-requisitos
 
 Antes de começar:
 
-- **Bun** (recomendado: mesma linha do monorepo, ex.: `1.3.x`) — [Instalação](https://bun.sh/docs/installation)
+- **Node.js** + **Corepack** (para usar o `yarn` declarado no `packageManager` da raiz) — [Yarn](https://yarnpkg.com/getting-started/install)
 - **Docker** e **Docker Compose** (PostgreSQL e, se quiser, API + web + tracing via Compose na raiz)
 
 ## Configuração de variáveis de ambiente
@@ -88,12 +88,12 @@ git clone <url-do-repositorio>
 cd watch-brasil
 ```
 
-### 2. Instale as dependências (Bun)
+### 2. Instale as dependências (Yarn)
 
 Na **raiz do monorepo**:
 
 ```bash
-bun install
+yarn install
 ```
 
 ## Como executar
@@ -125,10 +125,10 @@ docker compose up -d postgres
 
 cd apps/api
 cp .env.example .env   # ajuste se necessário
-bun run db:push
+yarn db:push
 # opcional: dados de demo (apaga vídeos/comentários existentes)
-bun run db:seed
-bun run dev
+yarn db:seed
+yarn dev
 ```
 
 ### Opção 3: Monorepo em dev (Turbo — API + web)
@@ -136,14 +136,14 @@ bun run dev
 Na raiz, com `.env` do web configurado:
 
 ```bash
-bun run dev
+yarn dev
 ```
 
 (Executa os `dev` dos pacotes via Turbo; confira `turbo.json` / scripts de cada app.)
 
 ### Testes da API no Docker
 
-Perfil `test` do Compose (roda `check-types` + `bun test` no container):
+Perfil `test` do Compose (roda `check-types` + Vitest no container):
 
 ```bash
 docker compose run --rm test
@@ -157,7 +157,7 @@ Fluxo padrão:
 2. Enviar `Authorization: Bearer <accessToken>` nas rotas protegidas
 3. `POST /auth/refresh` com `refreshToken` para renovar o access token
 
-### Usuários de demonstração (após `bun run db:seed`)
+### Usuários de demonstração (após `yarn workspace api db:seed`)
 
 | E-mail | Senha | Papel |
 |--------|-------|--------|
@@ -199,29 +199,29 @@ watch-brasil/
 
 | Comando | Descrição |
 |---------|-----------|
-| `bun run dev` | API em modo desenvolvimento (watch) |
-| `bun run build` | Compila TypeScript para `dist/` |
-| `bun run start` | Sobe `node dist/server.js` (produção compilada) |
-| `bun run check-types` | Verificação TypeScript |
-| `bun run test` | Testes com `bun:test` |
-| `bun run db:generate` | Gera migrações Drizzle |
-| `bun run db:push` | Aplica schema no banco |
-| `bun run db:studio` | Drizzle Studio |
-| `bun run db:seed` | **Reseta vídeos/comentários** e insere dados de demo |
+| `yarn dev` | API em modo desenvolvimento (watch) |
+| `yarn build` | Compila TypeScript para `dist/` |
+| `yarn start` | Sobe `node dist/server.js` (produção compilada) |
+| `yarn check-types` | Verificação TypeScript |
+| `yarn test` | Vitest |
+| `yarn db:generate` | Gera migrações Drizzle |
+| `yarn db:push` | Aplica schema no banco |
+| `yarn db:studio` | Drizzle Studio |
+| `yarn db:seed` | **Reseta vídeos/comentários** e insere dados de demo |
 
 ### Monorepo (raiz do repositório)
 
 | Comando | Descrição |
 |---------|-----------|
-| `bun run dev` | API + web em dev (Turbo) |
-| `bun run dev:api` | Só a API |
-| `bun run dev:web` | Só o frontend (Vite) |
-| `bun run dev:fe` | Sobe a API com Docker Compose + frontend local (hot reload) |
-| `bun run build` | Build de todos os pacotes |
-| `bun run build:api` / `build:web` | Build filtrado |
-| `bun run build:project` | `bun install` |
-| `bun run test` | Testes da API (Turbo → `apps/api`) |
-| `bun run docker:build` / `docker:up` / `docker:down` / `docker:test` | Compose na raiz |
+| `yarn dev` | API + web em dev (Turbo) |
+| `yarn dev:api` | Só a API |
+| `yarn dev:web` | Só o frontend (Vite) |
+| `yarn dev:fe` | Sobe a API com Docker Compose + frontend local (hot reload) |
+| `yarn build` | Build de todos os pacotes |
+| `yarn build:api` / `build:web` | Build filtrado |
+| `yarn build:project` | `yarn install` |
+| `yarn test` | Testes da API (Turbo → `apps/api`) |
+| `yarn docker:build` / `docker:up` / `docker:down` / `docker:test` | Compose na raiz |
 
 ## Docker (visão geral)
 
@@ -245,13 +245,13 @@ docker compose build --no-cache api
 
 ```bash
 cd apps/api
-bun test
+yarn test
 ```
 
 Na raiz do monorepo:
 
 ```bash
-bun run test
+yarn test
 ```
 
 > [!NOTE]
@@ -315,11 +315,11 @@ bun run test
 ### Banco de dados
 
 - URL padrão de desenvolvimento alinhada ao Compose: `postgresql://watch_user:watch_pass@localhost:5432/watch_brasil`
-- Schema aplicado com `bun run db:push` (ou fluxo do `docker-entrypoint.sh` no container)
+- Schema aplicado com `yarn workspace api db:push` (ou fluxo do `docker-entrypoint.sh` no container)
 
 ### Seed e dados fictícios
 
-O comando `bun run db:seed`:
+O comando `yarn workspace api db:seed`:
 
 - Garante/atualiza usuários de demo (`admin` e `user`)
 - **Remove** todos os registros de **comentários** e **vídeos**
@@ -334,7 +334,7 @@ Use somente em ambientes de desenvolvimento.
 
 ## Docker entrypoint (`apps/api`)
 
-O script `docker-entrypoint.sh` (usado pela imagem da API) roda `bun install`, valida `DATABASE_URL`, executa `db:push`, `check-types` e inicia `bun run dev` ou build + `start` em produção.
+O script `docker-entrypoint.sh` (contexto de build na raiz do monorepo) roda `yarn install` em `/app`, valida `DATABASE_URL`, executa `yarn workspace api db:push`, `yarn workspace api check-types` e inicia `yarn workspace api dev` ou build + `start` em produção.
 
 ## Contribuindo
 
@@ -369,7 +369,7 @@ O projeto segue [Conventional Commits](https://www.conventionalcommits.org/):
 
 - Esperado: o seed **apaga** vídeos e comentários antes de recriar o cenário de demo
 
-### `bun test` falha na raiz do monorepo
+### `yarn test` falha na raiz do monorepo
 
 - Rode a partir de `apps/api` ou garanta que não há artefatos antigos em `dist/` apontando para testes obsoletos
 
@@ -381,7 +381,7 @@ Defina conforme a política do repositório (ex.: privado / desafio técnico).
 
 - [Documentação Fastify](https://fastify.dev/)
 - [Drizzle ORM](https://orm.drizzle.team/)
-- [Bun](https://bun.sh/docs)
+- [Yarn](https://yarnpkg.com/getting-started/install)
 - [Docker Compose](https://docs.docker.com/compose/)
 
 ---

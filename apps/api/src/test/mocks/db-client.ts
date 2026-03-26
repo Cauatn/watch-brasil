@@ -1,40 +1,40 @@
-import { mock } from "bun:test";
+import { vi } from "vitest";
 
 export const testDb = {
   query: {
-    usersTable: { findFirst: mock() },
-    videosTable: { findFirst: mock(), findMany: mock() },
-    commentsTable: { findFirst: mock(), findMany: mock() },
+    usersTable: { findFirst: vi.fn() },
+    videosTable: { findFirst: vi.fn(), findMany: vi.fn() },
+    commentsTable: { findFirst: vi.fn(), findMany: vi.fn() },
   },
-  insert: mock(),
-  update: mock(),
-  delete: mock(),
-  select: mock(),
+  insert: vi.fn(),
+  update: vi.fn(),
+  delete: vi.fn(),
+  select: vi.fn(),
 };
 
 function wireChains() {
   testDb.insert.mockImplementation(() => ({
-    values: mock(() => Promise.resolve()),
+    values: vi.fn(() => Promise.resolve()),
   }));
 
   testDb.update.mockImplementation(() => ({
-    set: mock(() => ({
-      where: mock(() => Promise.resolve()),
+    set: vi.fn(() => ({
+      where: vi.fn(() => Promise.resolve()),
     })),
   }));
 
   testDb.delete.mockImplementation(() => ({
-    where: mock(() => {
+    where: vi.fn(() => {
       const p = Promise.resolve();
       return Object.assign(p, {
-        returning: mock(() => Promise.resolve([])),
+        returning: vi.fn(() => Promise.resolve([])),
       });
     }),
   }));
 
   testDb.select.mockImplementation(() => ({
-    from: mock(() => ({
-      where: mock(() => Promise.resolve([{ value: "0" }])),
+    from: vi.fn(() => ({
+      where: vi.fn(() => Promise.resolve([{ value: "0" }])),
     })),
   }));
 }
@@ -52,9 +52,9 @@ export function resetDbMock() {
 
 export function wireUpdateReturning(rows: unknown[]) {
   testDb.update.mockImplementation(() => ({
-    set: mock(() => ({
-      where: mock(() => ({
-        returning: mock(() => Promise.resolve(rows)),
+    set: vi.fn(() => ({
+      where: vi.fn(() => ({
+        returning: vi.fn(() => Promise.resolve(rows)),
       })),
     })),
   }));
@@ -62,10 +62,10 @@ export function wireUpdateReturning(rows: unknown[]) {
 
 export function wireDeleteReturning(rows: unknown[]) {
   testDb.delete.mockImplementation(() => ({
-    where: mock(() => {
+    where: vi.fn(() => {
       const p = Promise.resolve();
       return Object.assign(p, {
-        returning: mock(() => Promise.resolve(rows)),
+        returning: vi.fn(() => Promise.resolve(rows)),
       });
     }),
   }));
@@ -73,8 +73,8 @@ export function wireDeleteReturning(rows: unknown[]) {
 
 export function wireSelectTotal(total: number) {
   testDb.select.mockImplementation(() => ({
-    from: mock(() => ({
-      where: mock(() => Promise.resolve([{ value: String(total) }])),
+    from: vi.fn(() => ({
+      where: vi.fn(() => Promise.resolve([{ value: String(total) }])),
     })),
   }));
 }

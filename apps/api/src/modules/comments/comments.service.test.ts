@@ -1,9 +1,12 @@
-import { describe, it, expect, beforeEach, mock } from "bun:test";
-import { testDb, resetDbMock, wireSelectTotal } from "../../test/mocks/db-client";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { testDb, resetDbMock, wireSelectTotal } from "../../test/mocks/db-client.js";
 
-mock.module("../../db/client", () => ({ db: testDb }));
+vi.mock("../../db/client.js", async () => {
+  const { testDb } = await import("../../test/mocks/db-client.js");
+  return { db: testDb };
+});
 
-import { commentsService } from "./comments.service";
+import { commentsService } from "./comments.service.js";
 
 const userRow = {
   id: "u1",

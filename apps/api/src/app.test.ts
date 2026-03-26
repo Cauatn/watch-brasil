@@ -1,12 +1,17 @@
-import { describe, it, expect, afterAll, mock } from "bun:test";
-import { testDb } from "./test/mocks/db-client";
+import { describe, it, expect, afterAll, vi } from "vitest";
+import { testDb } from "./test/mocks/db-client.js";
 
-mock.module("./db/client", () => ({ db: testDb }));
+vi.mock("./db/client.js", async () => {
+  const { testDb } = await import("./test/mocks/db-client.js");
+  return { db: testDb };
+});
 
-import { app } from "./app";
+import { app } from "./app.js";
 
 describe("app", () => {
-  afterAll(() => app.close());
+  afterAll(async () => {
+    await app.close();
+  });
 
   it("GET /health retorna ok", async () => {
     const res = await app.inject({ method: "GET", url: "/health" });

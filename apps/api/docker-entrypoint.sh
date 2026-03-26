@@ -1,8 +1,11 @@
 #!/usr/bin/env sh
 set -eu
 
+ROOT=/app
+cd "$ROOT"
+
 echo "[entrypoint] installing dependencies"
-bun install
+yarn install
 
 echo "[entrypoint] checking DATABASE_URL"
 if [ -z "${DATABASE_URL:-}" ]; then
@@ -11,18 +14,18 @@ if [ -z "${DATABASE_URL:-}" ]; then
 fi
 
 echo "[entrypoint] applying database schema"
-bun run db:push
+yarn workspace api db:push
 
 echo "[entrypoint] running type checks"
-bun run check-types
+yarn workspace api check-types
 
 if [ "${NODE_ENV:-development}" = "production" ]; then
   echo "[entrypoint] building api for production"
-  bun run build
+  yarn workspace api build
 
   echo "[entrypoint] starting api in production mode"
-  exec bun run start
+  exec yarn workspace api start
 fi
 
 echo "[entrypoint] starting api in development mode"
-exec bun run dev
+exec yarn workspace api dev

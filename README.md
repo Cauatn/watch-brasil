@@ -8,22 +8,22 @@ Na **raiz** do repositorio (apos `git clone`) — **nao** rode o Compose de dent
 
 ```bash
 cd watch-brasil
-bun install
+yarn install
 cp apps/api/.env.example apps/api/.env
 cp apps/web/.env.example apps/web/.env
 docker compose up -d --build
 ```
 
-Na **primeira** build, a etapa `RUN bun install` da imagem `web` pode ficar varios minutos em `Resolving dependencies` sem parecer progresso; e normal (rede + monorepo). Builds seguintes ficam mais rapidas com cache do Docker.
+Na **primeira** build, a etapa `RUN yarn install` da imagem `web` pode ficar varios minutos em `Resolving dependencies` sem parecer progresso; e normal (rede + monorepo). Builds seguintes ficam mais rapidas com cache do Docker.
 
 Isso sobe Postgres, API, web (Nginx) e dependencias do `docker-compose.yml`. Ajuste `apps/web/.env` se a API nao estiver em `http://localhost:3333`. Com o Compose, o front costuma ficar em **http://localhost:8080** (porta `WEB_PORT`). Para desenvolvimento so com Vite na maquina, veja [Como executar](#como-executar).
 
 > [!WARNING]
-> **Gerenciador de pacotes:** use **Bun** na raiz e nos apps (`bun install`, `bun run`, `bun test`). O monorepo declara `packageManager: bun@...`; evite npm/yarn/pnpm para nao divergir lockfile e scripts.
+> **Gerenciador de pacotes:** use **Yarn 4** na raiz (`yarn install`, `yarn dev`, `yarn test`). O monorepo declara `packageManager: yarn@4.6.0` (ative com Corepack: `corepack enable`). Commitamos `yarn.lock`; evite misturar gerenciadores no mesmo workspace.
 
 ## Acesso rapido (desenvolvimento)
 
-Depois de subir o Postgres, aplicar o schema (`bun run db:push` em `apps/api`) e rodar o seed (`bun run db:seed` em `apps/api`), use:
+Depois de subir o Postgres, aplicar o schema (`yarn workspace api db:push`) e rodar o seed (`yarn workspace api db:seed`), use:
 
 | Papel | E-mail | Senha | O que enxerga no app |
 | :--- | :--- | :--- | :--- |
@@ -33,7 +33,7 @@ Depois de subir o Postgres, aplicar o schema (`bun run db:push` em `apps/api`) e
 A **lista** e onde ficam suas tarefas de ver filmes: ao marcar *assistir filme*, o item fica ligado a um titulo do catalogo e voce abre o streaming a partir dali. Tarefas *gerais* sao lembretes sem filme associado.
 
 > [!TIP]
-> **Este e o README principal do monorepo (raiz).** Com `bun run dev` ou o fluxo local descrito abaixo, use no navegador: **frontend** http://localhost:5173 · **API** http://localhost:3333 · **Swagger (OpenAPI, todas as rotas)** http://localhost:3333/docs. Repeticao e notas de Docker ficam na secao [URLs local (referencia rapida)](#urls-local-referencia-rapida) ao final.
+> **Este e o README principal do monorepo (raiz).** Com `yarn dev` ou o fluxo local descrito abaixo, use no navegador: **frontend** http://localhost:5173 · **API** http://localhost:3333 · **Swagger (OpenAPI, todas as rotas)** http://localhost:3333/docs. Repeticao e notas de Docker ficam na secao [URLs local (referencia rapida)](#urls-local-referencia-rapida) ao final.
 
 ## Checklist de entrega (enunciado)
 
@@ -55,7 +55,7 @@ Referencia rapida do que o projeto cobre frente ao objetivo (tarefas, CRUD, rela
 
 - [x] **Frontend Vue** — Vue 3 + Vite; **Tailwind**; **shadcn-vue** (`apps/web/src/components/ui`); telas modulares em `features/*`.
 - [x] **Backend Node REST** — **Fastify** (nomenclatura do enunciado: alternativa ao Express); varios CRUDs (tarefas, videos, comentarios, usuarios).
-- [x] **Postgres relacional** — Drizzle ORM; `bun run db:push` / migracoes em `apps/api/drizzle`.
+- [x] **Postgres relacional** — Drizzle ORM; `yarn workspace api db:push` / migracoes em `apps/api/drizzle`.
 - [x] **Documentacao** — este README, [`apps/api/README.md`](apps/api/README.md), **OpenAPI/Swagger** em `http://localhost:3333/docs`.
 - [x] **Docker** — `docker-compose.yml` na raiz (Postgres, API, web conforme perfil).
 - [x] **JWT e controle de acesso** — token + papel `admin` | `user` (rotas admin protegidas).
@@ -63,17 +63,17 @@ Referencia rapida do que o projeto cobre frente ao objetivo (tarefas, CRUD, rela
 
 ### Diferencas em relacao ao texto do enunciado
 
-- [x] **Testes unitarios** — na API com **`bun:test`** e mocks do banco, **nao com Jest** (mesmo tipo de teste, runner diferente).
+- [x] **Testes unitarios** — na API com **Vitest** e mocks do banco (sem Jest).
 - [x] **AWS Lambda** — ponto de entrada em [`apps/api/src/lambda.ts`](apps/api/src/lambda.ts) (`@fastify/aws-lambda`); **nao** ha pipeline/IaC pronta — detalhes em `apps/api/README.md` (secao Lambda).
 
 > [!IMPORTANT]
 > **Documentacao e processo:** a API possui README dedicado em [`apps/api/README.md`](apps/api/README.md) (variaveis de ambiente, seed, exemplos de payload, Docker, testes e OpenAPI/Swagger). Este arquivo cobre o monorepo como um todo.
 
 > [!NOTE]
-> **Testes do frontend:** nao ha suite de testes automatizados no `apps/web`. O foco de testes esta na API (`bun:test` em `apps/api`, executavel com `bun run test` na raiz via Turbo).
+> **Testes do frontend:** nao ha suite de testes automatizados no `apps/web`. O foco de testes esta na API (Vitest em `apps/api`, executavel com `yarn test` na raiz via Turbo).
 
 > [!NOTE]
-> **Testes da API (Jest vs Bun):** os testes sao escritos com o runner **Bun** (`bun:test`), nao com Jest. Comportamento equivalente a testes unitarios com mocks do cliente de banco; ver `apps/api/src/**/*.test.ts`.
+> **Testes da API:** **Vitest**, com `vi.mock` no modulo `db/client`; ver `apps/api/src/**/*.test.ts`.
 
 ## Sobre o projeto
 
@@ -93,7 +93,7 @@ O backend expoe API REST com:
 ## Tecnologias principais
 
 - **Monorepo**: Turborepo
-- **Package manager**: Bun
+- **Package manager**: Yarn 4 (Corepack)
 - **Frontend**: Vue 3 + Vite + TypeScript
 - **Backend**: Fastify + TypeScript + JWT + Zod
 - **Banco de dados**: PostgreSQL
@@ -103,8 +103,7 @@ O backend expoe API REST com:
 
 Antes de comecar, instale:
 
-- **Node.js** (v18+)
-- **Bun** (v1.3+)
+- **Node.js** (v18+; recomenda-se habilitar **Corepack** para alinhar ao `yarn` do `packageManager`)
 - **Docker** e **Docker Compose**
 
 ## Instalacao
@@ -119,7 +118,7 @@ cd watch-brasil
 ### 2. Instale as dependencias
 
 ```bash
-bun install
+yarn install
 ```
 
 ## Configuracao de variaveis de ambiente
@@ -147,7 +146,7 @@ VITE_API_URL=http://localhost:3333
 > Sem `VITE_API_URL` apontando para a API em execucao, o frontend nao consegira fazer requisicoes corretamente (CORS e URL base).
 
 > [!WARNING]
-> **Seed de desenvolvimento (`apps/api`):** o comando `bun run db:seed` dentro de `apps/api` **apaga todos os videos e comentarios** e recria dados de demonstracao. Use apenas em ambiente de desenvolvimento.
+> **Seed de desenvolvimento (`apps/api`):** o comando `yarn workspace api db:seed` **apaga todos os videos e comentarios** e recria dados de demonstracao. Use apenas em ambiente de desenvolvimento.
 
 ## Como executar
 
@@ -164,7 +163,7 @@ docker compose up -d
 Na raiz do projeto:
 
 ```bash
-bun run dev
+yarn dev
 ```
 
 Servicos locais:
@@ -178,7 +177,7 @@ Servicos locais:
 Sobe a API (e dependencias do Compose) e o Vite local:
 
 ```bash
-bun run dev:fe
+yarn dev:fe
 ```
 
 Use `VITE_API_URL=http://localhost:3333` em `apps/web/.env`.
@@ -191,13 +190,13 @@ Use `VITE_API_URL=http://localhost:3333` em `apps/web/.env`.
 Com Postgres ja no ar:
 
 ```bash
-bun run dev:api
+yarn dev:api
 ```
 
 ### Opcao 4: So o frontend (local)
 
 ```bash
-bun run dev:web
+yarn dev:web
 ```
 
 ## Estrutura do projeto
@@ -218,55 +217,57 @@ watch-brasil/
 
 | Comando | Descricao |
 | ------- | --------- |
-| `bun run dev` | Frontend + API em dev (Turbo) |
-| `bun run dev:api` | Apenas API (`apps/api`) |
-| `bun run dev:web` | Apenas frontend (`apps/web`) |
-| `bun run dev:fe` | `docker compose` sobe a API + frontend local (Vite) |
-| `bun run build` | Build de todos os pacotes (Turbo) |
-| `bun run build:api` | Build apenas da API |
-| `bun run build:web` | Build apenas do frontend |
-| `bun run build:project` | `bun install` (bootstrap do monorepo) |
-| `bun run test` / `bun run test:api` | Testes da API (`bun test` em `apps/api`) |
-| `bun run check-types` | Tipos em todos os pacotes |
-| `bun run lint` | Lint (Turbo) |
+| `yarn dev` | Frontend + API em dev (Turbo) |
+| `yarn dev:api` | Apenas API (`apps/api`) |
+| `yarn dev:web` | Apenas frontend (`apps/web`) |
+| `yarn dev:fe` | `docker compose` sobe a API + frontend local (Vite) |
+| `yarn build` | Build de todos os pacotes (Turbo) |
+| `yarn build:api` | Build apenas da API |
+| `yarn build:web` | Build apenas do frontend |
+| `yarn build:project` | `yarn install` (bootstrap do monorepo) |
+| `yarn test` / `yarn test:api` | Testes da API (Vitest em `apps/api`) |
+| `yarn check-types` | Tipos em todos os pacotes |
+| `yarn lint` | Lint (Turbo) |
 
 ### Docker (raiz)
 
 | Comando | Descricao |
 | ------- | --------- |
-| `bun run docker:build` | `docker compose build` |
-| `bun run docker:up` | Sobe stack em background |
-| `bun run docker:up:build` | Build + sobe stack |
-| `bun run docker:down` | Para e remove containers |
-| `bun run docker:test` | Roda testes da API no container (perfil `test`) |
+| `yarn docker:build` | `docker compose build` |
+| `yarn docker:up` | Sobe stack em background |
+| `yarn docker:up:build` | Build + sobe stack |
+| `yarn docker:down` | Para e remove containers |
+| `yarn docker:test` | Roda testes da API no container (perfil `test`) |
 
 ### Backend (`apps/api`)
 
+Na raiz: `yarn workspace api <script>`. Dentro de `apps/api`: `yarn <script>`.
+
 | Comando | Descricao |
 | ------- | --------- |
-| `bun run dev` | API em dev |
-| `bun run build` | Compila para `dist/` |
-| `bun run start` | API compilada (Node) |
-| `bun run check-types` | Typecheck |
-| `bun run test` | Testes Bun |
-| `bun run db:push` / `db:seed` / etc. | Drizzle |
+| `yarn workspace api dev` | API em dev (watch) |
+| `yarn workspace api build` | Compila para `dist/` |
+| `yarn workspace api start` | API compilada (Node) |
+| `yarn workspace api check-types` | Typecheck |
+| `yarn workspace api test` | Vitest |
+| `yarn workspace api db:push` / `db:seed` / etc. | Drizzle |
 
 ## Testes
 
 ### API
 
 ```bash
-bun run test
+yarn test
 ```
 
 Ou, em `apps/api`:
 
 ```bash
-cd apps/api && bun run test
+cd apps/api && yarn test
 ```
 
 > [!NOTE]
-> Os testes usam **Bun** (`bun:test`) e mock do modulo `db/client`; nao e obrigatorio ter PostgreSQL rodando para a suite passar.
+> Os testes usam **Vitest** (`vi.mock` em `db/client`); nao e obrigatorio ter PostgreSQL rodando para a suite passar.
 
 ### Frontend
 
@@ -280,9 +281,9 @@ O `docker-compose.yml` na raiz inclui PostgreSQL, API, frontend (Nginx), OpenTel
 Comandos uteis:
 
 ```bash
-bun run docker:up
+yarn docker:up
 docker compose logs -f api
-bun run docker:down
+yarn docker:down
 ```
 
 ## Convencoes de commit
@@ -297,7 +298,7 @@ O projeto segue Conventional Commits:
 
 ## URLs local (referencia rapida)
 
-Desenvolvimento comum (ex.: `bun run dev` na raiz ou API + web separados):
+Desenvolvimento comum (ex.: `yarn dev` na raiz ou API + web separados):
 
 - **Frontend (Vite):** http://localhost:5173
 - **API:** http://localhost:3333

@@ -3,7 +3,7 @@
 Frontend em Vue 3 + Vite, com arquitetura por features e componentes no estilo **shadcn-vue** (reka-ui, Tailwind).
 
 > [!WARNING]
-> **Gerenciador de pacotes:** na raiz do monorepo use **Bun** (`bun install`, `bun run dev`, etc.). Evite misturar com outros gerenciadores no mesmo workspace.
+> **Gerenciador de pacotes:** na raiz do monorepo use **Yarn 4** (`yarn install`, `yarn dev`, etc.). Evite misturar com outros gerenciadores no mesmo workspace.
 
 > [!NOTE]
 > **Testes automatizados:** não há suite de testes (Vitest/Vue Test Utils) configurada neste app. O foco atual está na funcionalidade da interface e nos testes da API.
@@ -13,21 +13,21 @@ Frontend em Vue 3 + Vite, com arquitetura por features e componentes no estilo *
 Na **raiz** do monorepo (recomendado):
 
 ```bash
-bun install
-bun run dev
+yarn install
+yarn dev
 ```
 
 Somente o frontend:
 
 ```bash
-bun run dev:web
+yarn dev:web
 ```
 
 Ou, dentro de `apps/web`:
 
 ```bash
 cd apps/web
-bun run dev
+yarn dev
 ```
 
 ## Integração com a API

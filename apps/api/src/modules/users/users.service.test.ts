@@ -1,13 +1,16 @@
-import { describe, it, expect, beforeEach, mock } from "bun:test";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import {
   testDb,
   resetDbMock,
   wireDeleteReturning,
-} from "../../test/mocks/db-client";
+} from "../../test/mocks/db-client.js";
 
-mock.module("../../db/client", () => ({ db: testDb }));
+vi.mock("../../db/client.js", async () => {
+  const { testDb } = await import("../../test/mocks/db-client.js");
+  return { db: testDb };
+});
 
-import { findUserById, usersService } from "./users.service";
+import { findUserById, usersService } from "./users.service.js";
 
 describe("usersService", () => {
   beforeEach(() => resetDbMock());

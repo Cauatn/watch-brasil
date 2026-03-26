@@ -1,26 +1,25 @@
 # syntax=docker/dockerfile:1
 
-# Usa imagem oficial do Bun (Node + Bun preinstalado)
-FROM oven/bun:1 AS base
+FROM node:22-alpine AS base
 
-# Define diretorio de trabalho dentro do container
 WORKDIR /app
 
-# Copia arquivos de manifest para aproveitar cache de dependencias
-COPY package.json tsconfig.json drizzle.config.ts ./
+RUN corepack enable
 
-# Instala dependencias do backend
-RUN --mount=type=cache,target=/root/.bun/install/cache \
-    bun install
+COPY package.json yarn.lock .yarnrc.yml turbo.json ./
+COPY apps/api/package.json apps/api/tsconfig.json apps/api/drizzle.config.ts ./apps/api/
+COPY apps/web/package.json ./apps/web/
+COPY packages ./packages
 
-# Copia o restante do codigo da API
-COPY . .
+RUN --mount=type=cache,target=/root/.yarn/cache \
+    yarn install --immutable
 
-# Garante permissao de execucao no entrypoint
-RUN chmod +x ./docker-entrypoint.sh
+COPY apps/api ./apps/api
 
-# Porta exposta pela API Fastify
+RUN chmod +x ./apps/api/docker-entrypoint.sh
+
+WORKDIR /app
+
 EXPOSE 3333
 
-# Comando de inicializacao (dev/prod controlado por NODE_ENV no entrypoint)
-CMD ["./docker-entrypoint.sh"]
+CMD ["/app/apps/api/docker-entrypoint.sh"]
