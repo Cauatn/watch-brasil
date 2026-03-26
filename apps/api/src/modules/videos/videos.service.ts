@@ -9,6 +9,7 @@ export const videosService = {
     limit: number;
     status?: VideoStatus;
     uploadedBy?: string;
+    search?: string;
   }) {
     return videosRepository.listVideos(input);
   },

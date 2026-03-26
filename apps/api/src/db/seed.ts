@@ -37,18 +37,45 @@ const SEED_VIDEOS: Array<{
   mimeType: string;
 }> = [
   {
-    title: "Sample Video 1",
-    url: "https://example.com/video1.mp4",
-    coverUrl: "https://example.com/cover1.jpg",
-    description: "Vídeo de exemplo para popular o catálogo.",
-    mimeType: "video/mp4",
+    title: "Marvel — elenco e Vingadores: Doomsday",
+    url: "https://youtu.be/vXloUcjVMx4?si=u1Jx8JRn7BOe_4_9",
+    coverUrl:
+      "https://rollingstone.com.br/wp-content/uploads/2025/03/marvel-anuncia-elenco-de-proximo-filme-dos-vingadores-avengers-doomsday.jpg",
+    description:
+      "Cobertura Rolling Stone BR sobre o próximo filme dos Vingadores (YouTube).",
+    mimeType: "text/html",
   },
   {
-    title: "Sample Video 2",
-    url: "https://example.com/video2.mp4",
-    coverUrl: "https://example.com/cover2.jpg",
-    description: "Vídeo de exemplo para testar upload/UX.",
-    mimeType: "video/mp4",
+    title: "Trailer em destaque",
+    url: "https://youtu.be/X23XCFgdh2M?si=cdbqg8MvBcOdk_n7",
+    coverUrl:
+      "https://br.web.img3.acsta.net/pictures/16/09/29/21/15/495786.jpg",
+    description: "Trailer hospedado no YouTube com capa Allociné/ACSTA.",
+    mimeType: "text/html",
+  },
+  {
+    title: "Big Buck Bunny",
+    url: "https://youtu.be/YE7VzlLtp-4",
+    coverUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Big_buck_bunny_poster_big.jpg/960px-Big_buck_bunny_poster_big.jpg",
+    description: "Curta open movie da Blender Foundation (domínio público).",
+    mimeType: "text/html",
+  },
+  {
+    title: "Sintel",
+    url: "https://youtu.be/eRsGyueVLvQ",
+    coverUrl:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjBYIFMa_X7iGXImrCNz4plKxcMMgEaTXV0g&s",
+    description: "Trailer do open movie Sintel (Blender Foundation).",
+    mimeType: "text/html",
+  },
+  {
+    title: "Tears of Steel",
+    url: "https://youtu.be/R6MlEdmsc2Y",
+    coverUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Tos-poster.png/500px-Tos-poster.png",
+    description: "Live action / VFX open movie da Blender Foundation.",
+    mimeType: "text/html",
   },
 ];
 

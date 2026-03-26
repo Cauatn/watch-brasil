@@ -16,6 +16,7 @@ export const listVideosQuerySchema = z.object({
   limit: z.coerce.number().int().positive().max(100).default(20),
   status: z.enum(["processing", "ready", "error"]).optional(),
   uploadedBy: uuidSchema.optional(),
+  search: z.string().trim().max(200).optional(),
 });
 
 export const updateVideoSchema = z.object({

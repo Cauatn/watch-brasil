@@ -1,4 +1,4 @@
-import { and, count, desc, eq, sql } from "drizzle-orm";
+import { SQL, and, count, desc, eq, sql } from "drizzle-orm";
 import type { VideoStatus } from "../../shared/types/index.js";
 import { videosTable } from "../../db/schema.js";
 import { db } from "../../db/client.js";
@@ -59,11 +59,18 @@ export const videosRepository = {
     limit: number;
     status?: VideoStatus;
     uploadedBy?: string;
+    search?: string;
   }) {
-    const filters = [];
+    const filters: SQL[] = [];
     if (input.status) filters.push(eq(videosTable.status, input.status));
     if (input.uploadedBy)
       filters.push(eq(videosTable.uploadedById, input.uploadedBy));
+    const titleSearch = input.search?.trim();
+
+    if (titleSearch)
+      filters.push(
+        sql`${videosTable.title} ILIKE ${`%${titleSearch}%`}`,
+      );
 
     const whereClause = filters.length > 1 ? and(...filters) : filters[0];
     const offset = (input.page - 1) * input.limit;

@@ -21,7 +21,13 @@ export const app = Fastify({ logger: true });
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
-app.register(cors, { origin: true });
+//Config cors basica para o projeto
+app.register(cors, {
+  origin: true,
+  methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+});
+
 app.register(jwt, {
   secret: process.env.JWT_SECRET ?? "watch-brasil-dev-secret",
 });
