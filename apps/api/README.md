@@ -48,16 +48,16 @@ cp .env.example .env
 
 Variáveis:
 
-| Variável | Obrigatória | Descrição |
-|----------|-------------|-----------|
-| `DATABASE_URL` | Sim | URL do PostgreSQL |
-| `JWT_SECRET` | Recomendada | Segredo dos JWT (há fallback só para dev) |
-| `PORT` | Não | Porta HTTP (padrão `3333`) |
-| `HOST` | Não | Bind (padrão `0.0.0.0`) |
-| `NODE_ENV` | Não | `development` \| `production` |
-| `OTEL_ENABLED` | Não | `true` / `false` |
-| `OTEL_SERVICE_NAME` | Não | Nome no tracing |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | Não | Ex.: `http://localhost:4318` |
+| Variável                      | Obrigatória | Descrição                                 |
+| ----------------------------- | ----------- | ----------------------------------------- |
+| `DATABASE_URL`                | Sim         | URL do PostgreSQL                         |
+| `JWT_SECRET`                  | Recomendada | Segredo dos JWT (há fallback só para dev) |
+| `PORT`                        | Não         | Porta HTTP (padrão `3333`)                |
+| `HOST`                        | Não         | Bind (padrão `0.0.0.0`)                   |
+| `NODE_ENV`                    | Não         | `development` \| `production`             |
+| `OTEL_ENABLED`                | Não         | `true` / `false`                          |
+| `OTEL_SERVICE_NAME`           | Não         | Nome no tracing                           |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | Não         | Ex.: `http://localhost:4318`              |
 
 Exemplo mínimo local:
 
@@ -103,19 +103,19 @@ yarn install
 Na **raiz do monorepo**:
 
 ```bash
-docker compose up -d
+yarn docker:up
 ```
 
-Isso sobe, entre outros, PostgreSQL, API, frontend (Nginx), coletor OTLP e Jaeger (conforme `docker-compose.yml`).
+Isso builda e sobe PostgreSQL, API (com seed automatico), frontend (Nginx), coletor OTLP e Jaeger.
 
 URLs típicas:
 
-| Serviço | URL |
-|---------|-----|
-| **API** | http://localhost:3333 |
-| **Swagger** | http://localhost:3333/docs |
-| **Web** | http://localhost:8080 (porta configurável via `WEB_PORT`) |
-| **Jaeger UI** | http://localhost:16686 |
+| Serviço       | URL                                                       |
+| ------------- | --------------------------------------------------------- |
+| **API**       | http://localhost:3333                                     |
+| **Swagger**   | http://localhost:3333/docs                                |
+| **Web**       | http://localhost:5173 (porta configuravel via `WEB_PORT`) |
+| **Jaeger UI** | http://localhost:16686                                    |
 
 ### Opção 2: Só a API em desenvolvimento (local)
 
@@ -159,10 +159,10 @@ Fluxo padrão:
 
 ### Usuários de demonstração (após `yarn workspace api db:seed`)
 
-| E-mail | Senha | Papel |
-|--------|-------|--------|
+| E-mail              | Senha       | Papel   |
+| ------------------- | ----------- | ------- |
 | `admin@example.com` | `admin1234` | `admin` |
-| `user@example.com` | `user12345` | `user` |
+| `user@example.com`  | `user12345` | `user`  |
 
 No **frontend**, o **admin** vê primeiro o item **Painel admin** (métricas), depois **Adicionar filme**, e compartilha com o usuário comum o catálogo, o player, comentários e a lista **Filmes para ver (lista)** — tarefas ligadas a filmes do catálogo (e lembretes gerais). O **user** não acessa painel nem cadastro de títulos.
 
@@ -197,31 +197,31 @@ watch-brasil/
 
 ## Scripts disponíveis (`apps/api`)
 
-| Comando | Descrição |
-|---------|-----------|
-| `yarn dev` | API em modo desenvolvimento (watch) |
-| `yarn build` | Compila TypeScript para `dist/` |
-| `yarn start` | Sobe `node dist/server.js` (produção compilada) |
-| `yarn check-types` | Verificação TypeScript |
-| `yarn test` | Vitest |
-| `yarn db:generate` | Gera migrações Drizzle |
-| `yarn db:push` | Aplica schema no banco |
-| `yarn db:studio` | Drizzle Studio |
-| `yarn db:seed` | **Reseta vídeos/comentários** e insere dados de demo |
+| Comando            | Descrição                                            |
+| ------------------ | ---------------------------------------------------- |
+| `yarn dev`         | API em modo desenvolvimento (watch)                  |
+| `yarn build`       | Compila TypeScript para `dist/`                      |
+| `yarn start`       | Sobe `node dist/server.js` (produção compilada)      |
+| `yarn check-types` | Verificação TypeScript                               |
+| `yarn test`        | Vitest                                               |
+| `yarn db:generate` | Gera migrações Drizzle                               |
+| `yarn db:push`     | Aplica schema no banco                               |
+| `yarn db:studio`   | Drizzle Studio                                       |
+| `yarn db:seed`     | **Reseta vídeos/comentários** e insere dados de demo |
 
 ### Monorepo (raiz do repositório)
 
-| Comando | Descrição |
-|---------|-----------|
-| `yarn dev` | API + web em dev (Turbo) |
-| `yarn dev:api` | Só a API |
-| `yarn dev:web` | Só o frontend (Vite) |
-| `yarn dev:fe` | Sobe a API com Docker Compose + frontend local (hot reload) |
-| `yarn build` | Build de todos os pacotes |
-| `yarn build:api` / `build:web` | Build filtrado |
-| `yarn build:project` | `yarn install` |
-| `yarn test` | Testes da API (Turbo → `apps/api`) |
-| `yarn docker:build` / `docker:up` / `docker:down` / `docker:test` | Compose na raiz |
+| Comando                                          | Descrição                                                   |
+| ------------------------------------------------ | ----------------------------------------------------------- |
+| `yarn dev`                                       | API + web em dev (Turbo)                                    |
+| `yarn dev:api`                                   | Só a API                                                    |
+| `yarn dev:web`                                   | Só o frontend (Vite)                                        |
+| `yarn dev:fe`                                    | Sobe a API com Docker Compose + frontend local (hot reload) |
+| `yarn build`                                     | Build de todos os pacotes                                   |
+| `yarn build:api` / `build:web`                   | Build filtrado                                              |
+| `yarn build:project`                             | `yarn install`                                              |
+| `yarn test`                                      | Testes da API (Turbo → `apps/api`)                          |
+| `yarn docker:up` / `docker:down` / `docker:test` | Compose na raiz                                             |
 
 ## Docker (visão geral)
 
@@ -229,7 +229,7 @@ Serviços definidos na raiz (`docker-compose.yml`) incluem:
 
 - **postgres** — PostgreSQL na porta `5432`
 - **api** — esta API na porta `3333`
-- **web** — frontend (porta padrão mapeada em `8080`, ajustável com `WEB_PORT`)
+- **web** — frontend (porta padrao mapeada em `5173`, ajustavel com `WEB_PORT`)
 - **otel-collector** / **jaeger** — tracing (opcional para dev)
 - **test** — perfil para pipeline de testes da API
 

@@ -12,16 +12,10 @@ yarn install
 cp apps/api/.env.example apps/api/.env
 cp apps/web/.env.example apps/web/.env
 
-# infra (docker): banco + observabilidade
-docker compose up -d postgres jaeger otel-collector
-
-# backend local: schema + seed
-yarn workspace api db:push
-yarn workspace api db:seed
-
-# app local (turbo): API + frontend
-yarn dev
+yarn docker:up
 ```
+
+O comando `yarn docker:up` builda `api` e `web`, sobe toda a stack (Postgres, API, frontend, Jaeger, OpenTelemetry) e roda o seed automaticamente.
 
 URLs disponiveis nesse fluxo:
 
@@ -39,12 +33,12 @@ Na **primeira** execucao, `yarn install` e o build da imagem da API podem demora
 
 Depois de subir o Postgres, aplicar o schema (`yarn workspace api db:push`) e rodar o seed (`yarn workspace api db:seed`), use:
 
-| Papel | E-mail | Senha | O que enxerga no app |
-| :--- | :--- | :--- | :--- |
+| Papel             | E-mail              | Senha       | O que enxerga no app                                                                                                                                                             |
+| :---------------- | :------------------ | :---------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Administrador** | `admin@example.com` | `admin1234` | **Painel** (resumo e relatorios), **cadastro de filmes** no catalogo, e o mesmo que o usuario: inicio, titulos, player, comentarios e **lista pessoal de filmes para assistir**. |
-| **Usuario** | `user@example.com` | `user12345` | Inicio, catalogo, player, comentarios e **lista pessoal de filmes para assistir**. Sem painel admin e sem tela de adicionar filme. |
+| **Usuario**       | `user@example.com`  | `user12345` | Inicio, catalogo, player, comentarios e **lista pessoal de filmes para assistir**. Sem painel admin e sem tela de adicionar filme.                                               |
 
-A **lista** e onde ficam suas tarefas de ver filmes: ao marcar *assistir filme*, o item fica ligado a um titulo do catalogo e voce abre o streaming a partir dali. Tarefas *gerais* sao lembretes sem filme associado.
+A **lista** e onde ficam suas tarefas de ver filmes: ao marcar _assistir filme_, o item fica ligado a um titulo do catalogo e voce abre o streaming a partir dali. Tarefas _gerais_ sao lembretes sem filme associado.
 
 ## Checklist de entrega (enunciado)
 
@@ -68,7 +62,7 @@ Referencia rapida do que o projeto cobre frente ao objetivo (tarefas, CRUD, rela
 - [x] **Backend Node REST** — **Fastify** (nomenclatura do enunciado: alternativa ao Express); varios CRUDs (tarefas, videos, comentarios, usuarios).
 - [x] **Postgres relacional** — Drizzle ORM; `yarn workspace api db:push` / migracoes em `apps/api/drizzle`.
 - [x] **Documentacao** — este README, [`apps/api/README.md`](apps/api/README.md), **OpenAPI/Swagger** em `http://localhost:3333/docs`.
-- [x] **Docker** — `docker-compose.yml` na raiz (Postgres, API, web conforme perfil).
+- [x] **Docker** — `docker-compose.yml` na raiz (Postgres, API, web, OpenTelemetry e Jaeger).
 - [x] **JWT e controle de acesso** — token + papel `admin` | `user` (rotas admin protegidas).
 - [x] **OpenTelemetry** — OTLP opcional; **Jaeger** no Compose (variaveis `OTEL_*` na API).
 
@@ -235,42 +229,40 @@ watch-brasil/
 
 ### Raiz (monorepo)
 
-| Comando | Descricao |
-| ------- | --------- |
-| `yarn dev` | Frontend + API em dev (Turbo) |
-| `yarn dev:api` | Apenas API (`apps/api`) |
-| `yarn dev:web` | Apenas frontend (`apps/web`) |
-| `yarn dev:fe` | `docker compose` sobe a API + frontend local (Vite) |
-| `yarn build` | Build de todos os pacotes (Turbo) |
-| `yarn build:api` | Build apenas da API |
-| `yarn build:web` | Build apenas do frontend |
-| `yarn build:project` | `yarn install` (bootstrap do monorepo) |
-| `yarn test` / `yarn test:api` | Testes da API (Vitest em `apps/api`) |
-| `yarn check-types` | Tipos em todos os pacotes |
-| `yarn lint` | Lint (Turbo) |
+| Comando                       | Descricao                                           |
+| ----------------------------- | --------------------------------------------------- |
+| `yarn dev`                    | Frontend + API em dev (Turbo)                       |
+| `yarn dev:api`                | Apenas API (`apps/api`)                             |
+| `yarn dev:web`                | Apenas frontend (`apps/web`)                        |
+| `yarn dev:fe`                 | `docker compose` sobe a API + frontend local (Vite) |
+| `yarn build`                  | Build de todos os pacotes (Turbo)                   |
+| `yarn build:api`              | Build apenas da API                                 |
+| `yarn build:web`              | Build apenas do frontend                            |
+| `yarn build:project`          | `yarn install` (bootstrap do monorepo)              |
+| `yarn test` / `yarn test:api` | Testes da API (Vitest em `apps/api`)                |
+| `yarn check-types`            | Tipos em todos os pacotes                           |
+| `yarn lint`                   | Lint (Turbo)                                        |
 
 ### Docker (raiz)
 
-| Comando | Descricao |
-| ------- | --------- |
-| `yarn docker:build` | `docker compose build` |
-| `yarn docker:up` | Sobe stack em background |
-| `yarn docker:up:build` | Build + sobe stack |
-| `yarn docker:down` | Para e remove containers |
-| `yarn docker:test` | Roda testes da API no container (perfil `test`) |
+| Comando            | Descricao                                                               |
+| ------------------ | ----------------------------------------------------------------------- |
+| `yarn docker:up`   | Build sequencial de `api` e `web` + sobe toda a stack (seed automatico) |
+| `yarn docker:down` | Para e remove containers                                                |
+| `yarn docker:test` | Roda testes da API no container (perfil `test`)                         |
 
 ### Backend (`apps/api`)
 
 Na raiz: `yarn workspace api <script>`. Dentro de `apps/api`: `yarn <script>`.
 
-| Comando | Descricao |
-| ------- | --------- |
-| `yarn workspace api dev` | API em dev (watch) |
-| `yarn workspace api build` | Compila para `dist/` |
-| `yarn workspace api start` | API compilada (Node) |
-| `yarn workspace api check-types` | Typecheck |
-| `yarn workspace api test` | Vitest |
-| `yarn workspace api db:push` / `db:seed` / etc. | Drizzle |
+| Comando                                         | Descricao            |
+| ----------------------------------------------- | -------------------- |
+| `yarn workspace api dev`                        | API em dev (watch)   |
+| `yarn workspace api build`                      | Compila para `dist/` |
+| `yarn workspace api start`                      | API compilada (Node) |
+| `yarn workspace api check-types`                | Typecheck            |
+| `yarn workspace api test`                       | Vitest               |
+| `yarn workspace api db:push` / `db:seed` / etc. | Drizzle              |
 
 ## Testes
 

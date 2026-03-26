@@ -34,6 +34,7 @@ services:
       NODE_ENV: development
       PORT: 3333
       HOST: 0.0.0.0
+      SEED_DB: "${SEED_DB:-true}"
       OTEL_ENABLED: "true"
       OTEL_SERVICE_NAME: watch-brasil-api
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
@@ -41,6 +42,20 @@ services:
       postgres:
         condition: service_healthy
       otel-collector:
+        condition: service_started
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3333}
+    container_name: watch-brasil-web
+    ports:
+      - "${WEB_PORT:-5173}:80"
+    depends_on:
+      api:
         condition: service_started
     restart: unless-stopped
 

@@ -16,9 +16,7 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "docker:build": "docker compose build",
-    "docker:up": "docker compose up -d",
-    "docker:up:build": "docker compose up -d --build",
+    "docker:up": "docker compose build api && docker compose build web && docker compose up -d",
     "docker:down": "docker compose down",
     "docker:test": "docker compose --profile test run --rm test"
   },

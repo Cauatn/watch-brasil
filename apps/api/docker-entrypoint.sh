@@ -16,6 +16,11 @@ fi
 echo "[entrypoint] applying database schema"
 yarn workspace api db:push
 
+if [ "${SEED_DB:-false}" = "true" ]; then
+  echo "[entrypoint] seeding database"
+  yarn workspace api db:seed
+fi
+
 echo "[entrypoint] running type checks"
 yarn workspace api check-types
 
