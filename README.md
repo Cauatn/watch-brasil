@@ -13,6 +13,38 @@ Depois de subir o Postgres, aplicar o schema (`bun run db:push` em `apps/api`) e
 
 A **lista** e onde ficam suas tarefas de ver filmes: ao marcar *assistir filme*, o item fica ligado a um titulo do catalogo e voce abre o streaming a partir dali. Tarefas *gerais* sao lembretes sem filme associado.
 
+## Checklist de entrega (enunciado)
+
+Referencia rapida do que o projeto cobre frente ao objetivo (tarefas, CRUD, relatorios, stack pedida) e observacoes curtas.
+
+### Objetivo: gerenciamento de tarefas
+
+- [x] **Contas** — registro/login (`/auth/*`), JWT, perfil (`/users/me`).
+- [x] **CRUD de tarefas** — `GET/POST/PATCH/DELETE /tasks`; na UI: pagina da lista + **sheet “Ver tarefas”** no header do catalogo.
+- [x] **Categorizar** — `general` ou `watch_movie` (ligada a um video do catalogo).
+- [x] **Acompanhar progresso** — estados `pending`, `in_progress`, `done`; painel admin com agregados (`/admin/reports/summary`).
+- [ ] **Colaboracao em tarefas** — *nao implementado como lista compartilhada*: cada usuario ve so suas tarefas. **Colaboracao leve** existe em **comentarios** no mesmo titulo, visiveis a todos logados.
+
+### Caso de uso (streaming)
+
+- [x] Catalogo de videos, reproducao/embed, **metas “ver filme”** amarradas ao catalogo e botoes “na minha lista” no catalogo.
+
+### Requisitos tecnicos
+
+- [x] **Frontend Vue** — Vue 3 + Vite; **Tailwind**; componentes **shadcn-vue/Reka UI** (`apps/web/src/components/ui`); telas modulares em `features/*`.
+- [x] **Backend Node REST** — **Fastify** (nomenclatura do enunciado: alternativa ao Express); varios CRUDs (tarefas, videos, comentarios, usuarios).
+- [x] **Postgres relacional** — Drizzle ORM; `bun run db:push` / migracoes em `apps/api/drizzle`.
+- [x] **Documentacao** — este README, [`apps/api/README.md`](apps/api/README.md), **OpenAPI/Swagger** em `http://localhost:3333/docs`.
+- [x] **Docker** — `docker-compose.yml` na raiz (Postgres, API, web conforme perfil).
+- [x] **JWT e controle de acesso** — token + papel `admin` | `user` (rotas admin protegidas).
+- [x] **OpenTelemetry** — OTLP opcional; **Jaeger** no Compose (variaveis `OTEL_*` na API).
+
+### Diferencas em relacao ao texto do enunciado
+
+- [x] **Testes unitarios** — na API com **`bun:test`** e mocks do banco, **nao com Jest** (mesmo tipo de teste, runner diferente).
+- [x] **AWS Lambda** — ponto de entrada em [`apps/api/src/lambda.ts`](apps/api/src/lambda.ts) (`@fastify/aws-lambda`); **nao** ha pipeline/IaC pronta — detalhes em `apps/api/README.md` (secao Lambda).
+- [x] **UI Material / Vuetify** — **nao** usados; em vez disso, padrao **shadcn-vue** com Tailwind (atende “Material UI ou ShadCN-Vue”).
+
 > [!IMPORTANT]
 > **Documentacao e processo:** a API possui README dedicado em [`apps/api/README.md`](apps/api/README.md) (variaveis de ambiente, seed, endpoints, Docker, testes e OpenAPI/Swagger). Este arquivo cobre o monorepo como um todo.
 
@@ -38,6 +70,7 @@ O backend expoe API REST com:
 - perfil de usuario (`/users/me`)
 - catalogo de videos (`/videos`)
 - comentarios por video (`/videos/:id/comments`)
+- tarefas pessoais (`/tasks`) e relatorio admin (`GET /admin/reports/summary`)
 
 ## Tecnologias principais
 
