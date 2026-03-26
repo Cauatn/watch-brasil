@@ -204,13 +204,19 @@ watch-brasil/
 | `bun run db:studio` | Drizzle Studio |
 | `bun run db:seed` | **Reseta vídeos/comentários** e insere dados de demo |
 
-### Monorepo (raiz)
+### Monorepo (raiz do repositório)
 
 | Comando | Descrição |
 |---------|-----------|
-| `bun run dev` | Dev via Turbo (apps configurados) |
-| `bun run build` | Build via Turbo |
-| `bun run check-types` | Tipos em todos os pacotes |
+| `bun run dev` | API + web em dev (Turbo) |
+| `bun run dev:api` | Só a API |
+| `bun run dev:web` | Só o frontend (Vite) |
+| `bun run dev:fe` | Sobe a API com Docker Compose + frontend local (hot reload) |
+| `bun run build` | Build de todos os pacotes |
+| `bun run build:api` / `build:web` | Build filtrado |
+| `bun run build:project` | `bun install` |
+| `bun run test` | Testes da API (Turbo → `apps/api`) |
+| `bun run docker:build` / `docker:up` / `docker:down` / `docker:test` | Compose na raiz |
 
 ## Docker (visão geral)
 
