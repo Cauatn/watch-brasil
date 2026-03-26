@@ -5,9 +5,6 @@ Frontend em Vue 3 + Vite, com arquitetura por features e componentes no estilo *
 > [!WARNING]
 > **Gerenciador de pacotes:** na raiz do monorepo use **Yarn 4** (`yarn install`, `yarn dev`, etc.). Evite misturar com outros gerenciadores no mesmo workspace.
 
-> [!NOTE]
-> **Testes automatizados:** não há suite de testes (Vitest/Vue Test Utils) configurada neste app. O foco atual está na funcionalidade da interface e nos testes da API.
-
 ## Executar
 
 Na **raiz** do monorepo (recomendado):

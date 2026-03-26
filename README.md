@@ -11,15 +11,17 @@ cd watch-brasil
 yarn install
 cp apps/api/.env.example apps/api/.env
 cp apps/web/.env.example apps/web/.env
-docker compose up -d --build
+docker compose up -d
 yarn workspace api db:seed
+yarn dev
 ```
 
-O entrypoint da API no Compose ja aplica o schema (`db:push`); o **seed** acima preenche usuarios e catalogo de demonstracao (o seed **apaga** videos e comentarios existentes antes de recriar o cenario de demo).
+1. `docker compose up -d` sobe **Postgres**, **API**, **Jaeger** e demais servicos do Compose.
+2. O entrypoint da API ja aplica o schema (`db:push`).
+3. `yarn workspace api db:seed` preenche usuarios e catalogo de demonstracao (o seed **apaga** videos e comentarios existentes antes de recriar o cenario).
+4. `yarn dev` sobe o **frontend** com Vite em **http://localhost:5173** (hot reload).
 
-Na **primeira** build, a etapa `RUN yarn install` da imagem `web` pode ficar varios minutos em `Resolving dependencies` sem parecer progresso; e normal (rede + monorepo). Builds seguintes ficam mais rapidas com cache do Docker.
-
-Isso sobe Postgres, API, web (Nginx) e dependencias do `docker-compose.yml`. Ajuste `apps/web/.env` se a API nao estiver em `http://localhost:3333`. Com o Compose, o front costuma ficar em **http://localhost:8080** (porta `WEB_PORT`). Para desenvolvimento so com Vite na maquina, veja [Como executar](#como-executar).
+Na **primeira** execucao, `yarn install` e o build da imagem da API podem demorar alguns minutos (rede + monorepo). Execucoes seguintes ficam mais rapidas com cache do Docker e do Yarn.
 
 > [!WARNING]
 > **Gerenciador de pacotes:** use **Yarn 4** na raiz (`yarn install`, `yarn dev`, `yarn test`). O monorepo declara `packageManager: yarn@4.6.0` (ative com Corepack: `corepack enable`). Commitamos `yarn.lock`; evite misturar gerenciadores no mesmo workspace.

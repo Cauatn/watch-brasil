@@ -44,21 +44,6 @@ services:
         condition: service_started
     restart: unless-stopped
 
-  web:
-    build:
-      context: .
-      dockerfile: apps/web/Dockerfile
-      args:
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:3333}
-    image: watch-brasil-web:latest
-    container_name: watch-brasil-web
-    ports:
-      - "${WEB_PORT:-8080}:80"
-    depends_on:
-      api:
-        condition: service_started
-    restart: unless-stopped
-
   # Servico de teste da API (executado sob demanda)
   test:
     build:
