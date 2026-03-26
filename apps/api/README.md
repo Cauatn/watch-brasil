@@ -1,50 +1,43 @@
 # Watch Brasil API
 
-Backend da plataforma de videos e comentarios, desenvolvido com Fastify, TypeScript, PostgreSQL e Drizzle.
+Backend da plataforma de vídeos e comentários (Fastify, TypeScript, PostgreSQL, Drizzle).
 
-## Sobre o projeto
+---
 
-Esta API fornece:
+> **Aviso — gerenciador de pacotes**  
+> Este projeto usa **Bun** como gerenciador e executor de scripts: `bun install`, `bun run <script>`, `bun test`. Evite misturar com npm, yarn ou pnpm neste pacote para não divergir lockfile e comportamento.
 
-- autenticacao com JWT
-- gerenciamento de usuario autenticado
-- catalogo de videos
-- comentarios por video
-- documentacao OpenAPI via Swagger
+---
 
-## Stack
+> **Aviso — banco com dados simulados**  
+> O comando `bun run db:seed` **remove todos os vídeos e comentários** existentes no banco e **reinsere** usuários de demonstração, vídeos de exemplo e comentários fictícios (veja `src/db/seed.ts`).  
+> Use só em **desenvolvimento**. Sempre que você rodar o seed, o catálogo volta ao conjunto simulado — não trate esses dados como produção.
 
-- Node.js + TypeScript
-- Bun (package manager + scripts)
-- Fastify
-- Zod + fastify-type-provider-zod
-- PostgreSQL (Docker)
-- Drizzle ORM + Drizzle Kit
-- JWT (`@fastify/jwt`) + `bcryptjs`
+---
 
-## Pre-requisitos
+## Passo a passo (começar a API)
 
-- Node.js 18+
-- Bun 1.3+
-- Docker + Docker Compose
+### 1) Variáveis de ambiente
 
-## Instalacao
-
-Na raiz do monorepo:
+Na pasta `apps/api`, crie o `.env` (pode copiar o exemplo):
 
 ```bash
-bun install
-```
-
-## Configuracao de ambiente
-
-No backend (`apps/api`), crie o arquivo `.env`:
-
-```bash
+cd apps/api
 cp .env.example .env
 ```
 
-Exemplo de variaveis:
+| Variável | Obrigatória | Descrição |
+|----------|---------------|-----------|
+| `DATABASE_URL` | Sim | URL do PostgreSQL (ex.: `postgresql://watch_user:watch_pass@localhost:5432/watch_brasil`) |
+| `JWT_SECRET` | Recomendada | Segredo para assinar JWT (em dev o código tem fallback, mas defina em produção) |
+| `PORT` | Não | Porta HTTP (padrão `3333`) |
+| `HOST` | Não | Host de bind (padrão `0.0.0.0`) |
+| `OTEL_ENABLED` | Não | `true`/`false` — tracing OpenTelemetry |
+| `OTEL_SERVICE_NAME` | Não | Nome do serviço no tracing |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | Não | Endpoint OTLP (ex.: `http://localhost:4318`) |
+| `NODE_ENV` | Não | `development` ou `production` (afeta Docker entrypoint) |
+
+Exemplo mínimo local:
 
 ```env
 DATABASE_URL=postgresql://watch_user:watch_pass@localhost:5432/watch_brasil
@@ -53,72 +46,142 @@ PORT=3333
 HOST=0.0.0.0
 ```
 
-## Como executar
+### 2) Dependências (Bun)
 
-### 1) Subir banco PostgreSQL
+Na **raiz do monorepo**:
 
-Na raiz do monorepo:
+```bash
+bun install
+```
+
+### 3) Banco PostgreSQL
+
+Na **raiz do monorepo**:
 
 ```bash
 docker compose up -d
 ```
 
-### 2) Aplicar schema no banco
-
-No backend:
+### 4) Aplicar schema (Drizzle)
 
 ```bash
 cd apps/api
 bun run db:push
 ```
 
-### 3) Rodar API em desenvolvimento
+### 5) (Opcional) Popular dados simulados
 
-No backend:
+> Lembrete: isso **apaga vídeos e comentários** e recria o cenário de demo.
+
+```bash
+bun run db:seed
+```
+
+### 6) Subir a API
 
 ```bash
 bun run dev
 ```
 
-## Enderecos locais
+A API fica em `http://localhost:3333` (ou na porta definida em `PORT`).
+
+### 7) Testes
+
+Na raiz do monorepo ou em `apps/api`:
+
+```bash
+bun test
+```
+
+---
+
+## Endpoints principais
+
+Base: `http://localhost:<PORT>` (ex.: `3333`).
+
+| Método | Caminho | Auth | Descrição |
+|--------|---------|------|-----------|
+| GET | `/health` | Não | Saúde do serviço |
+| GET | `/docs` | Não | Swagger UI (documentação interativa) |
+| POST | `/auth/register` | Não | Cadastro |
+| POST | `/auth/login` | Não | Login (retorna `accessToken` e `refreshToken`) |
+| POST | `/auth/refresh` | Não | Renovar access token |
+| GET | `/users/me` | Bearer | Perfil do usuário autenticado |
+| PUT | `/users/me` | Bearer | Atualizar nome/senha |
+| DELETE | `/users/me` | Bearer | Remover conta |
+| GET | `/videos` | Bearer | Listar vídeos (query: paginação, filtros) |
+| POST | `/videos` | Bearer + **admin** | Criar vídeo |
+| GET | `/videos/:id` | Bearer | Detalhe do vídeo |
+| PUT | `/videos/:id` | Bearer + **admin** | Atualizar vídeo |
+| DELETE | `/videos/:id` | Bearer + **admin** | Remover vídeo |
+| GET | `/videos/:id/comments` | Bearer | Listar comentários |
+| POST | `/videos/:id/comments` | Bearer | Criar comentário |
+| DELETE | `/videos/:id/comments/:commentId` | Bearer | Remover comentário (autor) |
+
+Rotas protegidas: header `Authorization: Bearer <accessToken>`.
+
+---
+
+## Endereços úteis (local)
 
 - API: `http://localhost:3333`
 - Swagger: `http://localhost:3333/docs`
-- Jaeger UI (tracing): `http://localhost:16686`
+- Jaeger UI (tracing, se stack estiver no ar): `http://localhost:16686`
+
+---
+
+## Sobre o projeto
+
+A API oferece:
+
+- Autenticação JWT
+- Perfil do usuário autenticado
+- Catálogo de vídeos
+- Comentários por vídeo
+- OpenAPI via Swagger
+
+## Stack
+
+- TypeScript
+- **Bun** (scripts e testes)
+- Fastify
+- Zod + fastify-type-provider-zod
+- PostgreSQL
+- Drizzle ORM + Drizzle Kit
+- JWT (`@fastify/jwt`) + `bcryptjs`
+
+## Pré-requisitos
+
+- Bun 1.3+
+- Docker + Docker Compose (para PostgreSQL local)
 
 ## Observabilidade (OpenTelemetry + Jaeger)
-
-Para tracing local, suba os servicos pela raiz do monorepo:
 
 ```bash
 docker compose up -d
 ```
 
-Configuracao usada na API:
+Variáveis típicas: `OTEL_ENABLED=true`, `OTEL_SERVICE_NAME=watch-brasil-api`, `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318`.
 
-- `OTEL_ENABLED=true`
-- `OTEL_SERVICE_NAME=watch-brasil-api`
-- `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318`
+## Scripts (`apps/api`)
 
-## Scripts disponiveis (apps/api)
+| Comando | Descrição |
+|---------|-----------|
+| `bun run dev` | API em desenvolvimento |
+| `bun run build` | Compila para `dist/` |
+| `bun run start` | Sobe `dist/server.js` (Node) |
+| `bun run check-types` | Verificação TypeScript |
+| `bun run test` | Testes (Bun) |
+| `bun run db:generate` | Gera migrações Drizzle |
+| `bun run db:push` | Aplica schema no banco |
+| `bun run db:studio` | Drizzle Studio |
+| `bun run db:seed` | **Reseta vídeos/comentários** e insere dados de demo |
 
-| Comando               | Descricao                             |
-| --------------------- | ------------------------------------- |
-| `bun run dev`         | Inicia API em modo desenvolvimento    |
-| `bun run build`       | Compila TypeScript para `dist`        |
-| `bun run start`       | Sobe API compilada (`dist/server.js`) |
-| `bun run check-types` | Valida tipos TypeScript               |
-| `bun run test`        | Executa testes                        |
-| `bun run db:generate` | Gera migracoes Drizzle                |
-| `bun run db:push`     | Aplica schema no banco                |
-| `bun run db:studio`   | Abre Drizzle Studio                   |
+## Fluxo de autenticação
 
-## Fluxo de autenticacao
-
-1. `POST /auth/register` cria conta
-2. `POST /auth/login` retorna `accessToken` e `refreshToken`
-3. rotas protegidas exigem `Authorization: Bearer <accessToken>`
-4. `POST /auth/refresh` renova access token
+1. `POST /auth/register` ou `POST /auth/login`
+2. Use `accessToken` em `Authorization: Bearer ...`
+3. `POST /auth/refresh` com `refreshToken` para renovar o access token
 
 ## Estrutura do backend
 
@@ -133,11 +196,7 @@ apps/api/
 │   │   └── comments/
 │   ├── plugins/
 │   ├── shared/
-│   │   ├── db/
-│   │   ├── errors/
-│   │   ├── types/
-│   │   └── utils/
-│   ├── types/
+│   ├── db/
 │   ├── app.ts
 │   ├── server.ts
 │   └── lambda.ts
@@ -148,16 +207,7 @@ apps/api/
 
 ## Docker entrypoint
 
-Este projeto possui um arquivo `docker-entrypoint.sh` na raiz do backend para uso em pipelines e containers.
-
-Objetivo:
-
-- sincronizar dependencias
-- aplicar schema/migracao
-- validar tipos
-- iniciar servidor
-
-Execucao manual:
+`docker-entrypoint.sh` instala dependências com Bun, exige `DATABASE_URL`, roda `db:push`, `check-types` e sobe a API (`dev` ou `build` + `start` em produção).
 
 ```bash
 cd apps/api
@@ -165,19 +215,9 @@ chmod +x docker-entrypoint.sh
 ./docker-entrypoint.sh
 ```
 
-Modo de execucao:
+## CI/CD (resumo)
 
-- `NODE_ENV=development` (padrao): roda `bun run dev`
-- `NODE_ENV=production`: roda `bun run build` e depois `bun run start`
-
-## Observacoes de CI/CD
-
-Um fluxo comum no CI/CD para este backend:
-
-1. sincronizar codigo
-2. instalar dependencias
-3. executar `db:push` ou migracoes
-4. rodar `check-types` e testes
-5. reiniciar container/processo da API
-
-O `docker-entrypoint.sh` ja organiza este fluxo em um unico ponto de entrada.
+1. Checkout e `bun install`
+2. `bun run db:push` (ou migrações)
+3. `bun run check-types` e `bun test`
+4. Deploy / restart do processo
