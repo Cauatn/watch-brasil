@@ -5,65 +5,6 @@ Sistema full-stack para catalogo de videos com autenticacao JWT, comentarios, ta
 > [!WARNING]
 > **Gerenciador de pacotes:** use **Bun** na raiz e nos apps (`bun install`, `bun run`, `bun test`). O monorepo declara `packageManager: bun@...`; evite npm/yarn/pnpm para nao divergir lockfile e scripts.
 
-## Endpoints da API (visao geral)
-
-**Base local:** `http://localhost:3333` — **OpenAPI / Swagger UI:** [`http://localhost:3333/docs`](http://localhost:3333/docs) (contratos, exemplos e “try it out” com a API no ar).
-
-### Sem JWT (publico)
-
-| Metodo | Caminho |
-|--------|---------|
-| `GET` | `/health` |
-| `POST` | `/auth/register` |
-| `POST` | `/auth/login` |
-| `POST` | `/auth/refresh` |
-
-### Com JWT (`Authorization: Bearer`)
-
-**Usuarios**
-
-| Metodo | Caminho |
-|--------|---------|
-| `GET` | `/users/me` |
-| `PUT` | `/users/me` |
-| `DELETE` | `/users/me` |
-
-**Videos** — `POST`, `PUT`, `DELETE` em `/videos` e `/videos/:id` exigem papel **admin**; `GET` lista/detalhe: qualquer usuario autenticado.
-
-| Metodo | Caminho |
-|--------|---------|
-| `GET` | `/videos` |
-| `POST` | `/videos` |
-| `GET` | `/videos/:id` |
-| `PUT` | `/videos/:id` |
-| `DELETE` | `/videos/:id` |
-
-**Comentarios**
-
-| Metodo | Caminho |
-|--------|---------|
-| `GET` | `/videos/:id/comments` |
-| `POST` | `/videos/:id/comments` |
-| `DELETE` | `/videos/:id/comments/:commentId` (autor do comentario) |
-
-**Tarefas** (lista pessoal do usuario autenticado)
-
-| Metodo | Caminho |
-|--------|---------|
-| `GET` | `/tasks` |
-| `POST` | `/tasks` |
-| `GET` | `/tasks/:id` |
-| `PATCH` | `/tasks/:id` |
-| `DELETE` | `/tasks/:id` |
-
-### Admin (`Bearer` + role `admin`)
-
-| Metodo | Caminho |
-|--------|---------|
-| `GET` | `/admin/reports/summary` |
-
-Detalhes de body, query, codigos e variaveis de ambiente: [`apps/api/README.md`](apps/api/README.md).
-
 ## Acesso rapido (desenvolvimento)
 
 Depois de subir o Postgres, aplicar o schema (`bun run db:push` em `apps/api`) e rodar o seed (`bun run db:seed` em `apps/api`), use:
@@ -326,21 +267,6 @@ docker compose logs -f api
 bun run docker:down
 ```
 
-## Documentacao da API
-
-> [!TIP]
-> A API expoe **OpenAPI** via Fastify Swagger; use o Swagger UI para experimentar rotas e esquemas.
-
-Swagger UI:
-
-- http://localhost:3333/docs
-
-Todos os endpoints protegidos exigem:
-
-```http
-Authorization: Bearer <token>
-```
-
 ## Convencoes de commit
 
 O projeto segue Conventional Commits:
@@ -350,6 +276,22 @@ O projeto segue Conventional Commits:
 - `refactor`: refatoracao
 - `docs`: documentacao
 - `chore`: manutencao
+
+## URLs local (referencia rapida)
+
+Desenvolvimento comum (ex.: `bun run dev` na raiz ou API + web separados):
+
+- **Frontend (Vite):** http://localhost:5173
+- **API:** http://localhost:3333
+- **Swagger (OpenAPI, documentacao e “try it out”):** http://localhost:3333/docs
+
+Listagem de rotas, esquemas e autenticacao: use o **Swagger** ou o detalhe em [`apps/api/README.md`](apps/api/README.md). No **Docker Compose**, as portas do web podem diferir — veja `docker-compose.yml`.
+
+Rotas protegidas no Swagger costumam exigir header:
+
+```http
+Authorization: Bearer <token>
+```
 
 ## Troubleshooting
 
