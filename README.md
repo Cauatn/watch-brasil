@@ -68,17 +68,17 @@ Referencia rapida do que o projeto cobre frente ao objetivo (tarefas, CRUD, rela
 
 ### Diferencas em relacao ao texto do enunciado
 
-- [x] **Testes unitarios** — implementei na API com **Vitest**, mockando o cliente do banco (sem Jest).
+- [x] **Testes unitarios** — implementei na API com **Jest** (`ts-jest`), mockando o cliente do banco.
 - [x] **AWS Lambda** — ponto de entrada em [`apps/api/src/lambda.ts`](apps/api/src/lambda.ts) (`@fastify/aws-lambda`); **nao** ha pipeline/IaC pronta — detalhes em `apps/api/README.md` (secao Lambda).
 
 > [!IMPORTANT]
 > **Documentacao e processo:** a API possui README dedicado em [`apps/api/README.md`](apps/api/README.md) (variaveis de ambiente, seed, exemplos de payload, Docker, testes e OpenAPI/Swagger). Este arquivo cobre o monorepo como um todo.
 
 > [!NOTE]
-> **Testes do frontend:** nao ha suite de testes automatizados no `apps/web`. O foco de testes esta na API (Vitest em `apps/api`, executavel com `yarn test` na raiz via Turbo).
+> **Testes do frontend:** nao ha suite de testes automatizados no `apps/web`. O foco de testes esta na API (Jest em `apps/api`, executavel com `yarn test` na raiz via Turbo).
 
 > [!NOTE]
-> **Testes da API:** **Vitest**, com `vi.mock` no modulo `db/client`; ver `apps/api/src/**/*.test.ts`.
+> **Testes da API:** **Jest** com `ts-jest` e `jest.mock` no modulo `db/client`; ver `apps/api/src/**/*.test.ts`.
 
 ## Sobre o projeto
 
@@ -239,7 +239,7 @@ watch-brasil/
 | `yarn build:api`              | Build apenas da API                                 |
 | `yarn build:web`              | Build apenas do frontend                            |
 | `yarn build:project`          | `yarn install` (bootstrap do monorepo)              |
-| `yarn test` / `yarn test:api` | Testes da API (Vitest em `apps/api`)                |
+| `yarn test` / `yarn test:api` | Testes da API (Jest em `apps/api`)                  |
 | `yarn check-types`            | Tipos em todos os pacotes                           |
 | `yarn lint`                   | Lint (Turbo)                                        |
 
@@ -261,7 +261,7 @@ Na raiz: `yarn workspace api <script>`. Dentro de `apps/api`: `yarn <script>`.
 | `yarn workspace api build`                      | Compila para `dist/` |
 | `yarn workspace api start`                      | API compilada (Node) |
 | `yarn workspace api check-types`                | Typecheck            |
-| `yarn workspace api test`                       | Vitest               |
+| `yarn workspace api test`                       | Jest                 |
 | `yarn workspace api db:push` / `db:seed` / etc. | Drizzle              |
 
 ## Testes
@@ -279,7 +279,7 @@ cd apps/api && yarn test
 ```
 
 > [!NOTE]
-> Os testes usam **Vitest** (`vi.mock` em `db/client`); nao e obrigatorio ter PostgreSQL rodando para a suite passar.
+> Os testes usam **Jest** (`jest.mock` em `db/client`); nao e obrigatorio ter PostgreSQL rodando para a suite passar.
 
 ### Frontend
 

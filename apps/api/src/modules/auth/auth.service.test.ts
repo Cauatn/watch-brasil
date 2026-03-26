@@ -1,12 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+jest.mock("../../db/client.js");
+
 import { hash } from "bcryptjs";
 import { testDb, resetDbMock } from "../../test/mocks/db-client.js";
-
-vi.mock("../../db/client.js", async () => {
-  const { testDb } = await import("../../test/mocks/db-client.js");
-  return { db: testDb };
-});
-
 import { authService } from "./auth.service.js";
 
 describe("authService", () => {
@@ -68,7 +63,11 @@ describe("authService", () => {
         password: "certa",
       });
 
-      expect(result).toEqual({ id: "u1", email: "ana@test.com", role: "user" });
+      expect(result).toEqual({
+        id: "u1",
+        email: "ana@test.com",
+        role: "user",
+      });
     });
 
     it("retorna null quando usuario nao existe", async () => {
@@ -90,7 +89,10 @@ describe("authService", () => {
       });
 
       expect(
-        await authService.login({ email: "ana@test.com", password: "errada" }),
+        await authService.login({
+          email: "ana@test.com",
+          password: "errada",
+        }),
       ).toBeNull();
     });
   });

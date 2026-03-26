@@ -1,16 +1,11 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+jest.mock("../../db/client.js");
+
 import {
   testDb,
   resetDbMock,
   wireUpdateReturning,
   wireSelectTotal,
 } from "../../test/mocks/db-client.js";
-
-vi.mock("../../db/client.js", async () => {
-  const { testDb } = await import("../../test/mocks/db-client.js");
-  return { db: testDb };
-});
-
 import { findVideoById, videosService } from "./videos.service.js";
 
 const userRow = {

@@ -1,10 +1,4 @@
-import { describe, it, expect, afterAll, vi } from "vitest";
-import { testDb } from "./test/mocks/db-client.js";
-
-vi.mock("./db/client.js", async () => {
-  const { testDb } = await import("./test/mocks/db-client.js");
-  return { db: testDb };
-});
+jest.mock("./db/client.js");
 
 import { app } from "./app.js";
 

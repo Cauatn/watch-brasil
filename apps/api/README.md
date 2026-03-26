@@ -23,7 +23,7 @@ O backend do **Watch Brasil** expõe autenticação JWT, perfil do usuário, CRU
 > **Dados simulados (`db:seed`).** O script `yarn workspace api db:seed` **apaga todos os vídeos e comentários** do banco e recria usuários, vídeos e comentários de demonstração (`src/db/seed.ts`). Use apenas em desenvolvimento. Cada execução redefine o catálogo para o cenário simulado.
 
 > [!NOTE]
-> **Testes:** **Vitest**, com `vi.mock` em `db/client`; não é necessário PostgreSQL para `yarn test` na API ou `yarn test` na raiz (Turbo).
+> **Testes:** **Jest** com `ts-jest` e `jest.mock` em `db/client`; nao e necessario PostgreSQL para `yarn test` na API ou `yarn test` na raiz (Turbo).
 
 > [!TIP]
 > Na raiz do repositório: `yarn test` (Turbo filtra o pacote `api`).
@@ -143,7 +143,7 @@ yarn dev
 
 ### Testes da API no Docker
 
-Perfil `test` do Compose (roda `check-types` + Vitest no container):
+Perfil `test` do Compose (roda `check-types` + Jest no container):
 
 ```bash
 docker compose run --rm test
@@ -203,7 +203,7 @@ watch-brasil/
 | `yarn build`       | Compila TypeScript para `dist/`                      |
 | `yarn start`       | Sobe `node dist/server.js` (produção compilada)      |
 | `yarn check-types` | Verificação TypeScript                               |
-| `yarn test`        | Vitest                                               |
+| `yarn test`        | Jest                                                 |
 | `yarn db:generate` | Gera migrações Drizzle                               |
 | `yarn db:push`     | Aplica schema no banco                               |
 | `yarn db:studio`   | Drizzle Studio                                       |
