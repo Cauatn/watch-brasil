@@ -138,6 +138,7 @@ export default {
     pageIntro:
       "As tarefas aqui servem para lembrar quais filmes do catálogo você quer ver. Escolha o tipo “Assistir filme”, selecione o título e abra o streaming pelo botão quando for assistir. “Geral” é só um lembrete, sem filme ligado.",
     formTitle: "Nova meta na lista",
+    formCollapsibleHint: "Abrir formulário para adicionar tarefa",
     formHint:
       "Use “Assistir filme” para uma meta ligada ao catálogo; “Geral” para anotações sem filme.",
     title: "Título",

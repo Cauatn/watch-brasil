@@ -7,9 +7,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import TasksFormBody from "@/features/tasks/components/TasksFormBody.vue";
 import { useVideosQuery } from "@/features/catalog/composables/use-videos-query";
 import { useTasksQuery } from "@/features/tasks/composables/use-tasks-query";
 import {
@@ -19,6 +23,7 @@ import {
 } from "@/features/tasks/services/task";
 import type { TaskCategory, TaskStatus } from "@/features/tasks/types/task";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
+import { ChevronDown } from "lucide-vue-next";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
@@ -107,67 +112,61 @@ const rootClass = computed(() =>
     <Card
       class="w-full shrink-0 border-white/10 bg-[#1a1a1a] text-white md:max-w-md"
     >
-      <CardHeader>
-        <CardTitle>{{ t("tasks.formTitle") }}</CardTitle>
-        <CardDescription class="text-white/60">
-          {{ t("tasks.formHint") }}
-        </CardDescription>
-      </CardHeader>
-      <CardContent class="space-y-4">
-        <div class="space-y-2">
-          <Label class="text-white/90">{{ t("tasks.title") }}</Label>
-          <Input
-            v-model="title"
-            class="border-white/15 bg-black/30 text-white"
-            :placeholder="t('tasks.titlePh')"
-          />
-        </div>
-        <div class="space-y-2">
-          <Label class="text-white/90">{{ t("tasks.description") }}</Label>
-          <Textarea
-            v-model="description"
-            class="min-h-[80px] border-white/15 bg-black/30 text-white"
-            :placeholder="t('tasks.descriptionPh')"
-          />
-        </div>
-        <div class="space-y-2">
-          <Label class="text-white/90">{{ t("tasks.category") }}</Label>
-          <select
-            v-model="category"
-            class="flex h-10 w-full rounded-md border border-white/15 bg-black/30 px-3 text-sm text-white"
+      <Collapsible
+        v-if="props.stacked"
+        :default-open="false"
+      >
+        <template #default="{ open }">
+          <CollapsibleTrigger
+            class="flex w-full items-start justify-between gap-3 border-b border-white/10 p-4 text-left text-white outline-none transition-colors hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-[#E50914] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1a1a]"
           >
-            <option value="watch_movie">
-              {{ t("tasks.categoryWatch") }}
-            </option>
-            <option value="general">
-              {{ t("tasks.categoryGeneral") }}
-            </option>
-          </select>
-        </div>
-        <div v-if="category === 'watch_movie'" class="space-y-2">
-          <Label class="text-white/90">{{ t("tasks.linkVideo") }}</Label>
-          <select
-            v-model="videoId"
-            class="flex h-10 w-full rounded-md border border-white/15 bg-black/30 px-3 text-sm text-white"
-          >
-            <option value="">{{ t("tasks.pickVideo") }}</option>
-            <option
-              v-for="v in videoOptions"
-              :key="v.id"
-              :value="v.id"
-            >
-              {{ v.title }}
-            </option>
-          </select>
-        </div>
-        <Button
-          class="w-full bg-[#E50914] text-white hover:bg-[#c40812]"
-          :disabled="!title.trim() || createMut.isPending.value"
-          @click="createMut.mutate()"
-        >
-          {{ t("tasks.submit") }}
-        </Button>
-      </CardContent>
+            <div class="min-w-0 space-y-1">
+              <p class="text-base font-semibold leading-tight">
+                {{ t("tasks.formTitle") }}
+              </p>
+              <p class="text-sm text-white/60 leading-snug">
+                {{ t("tasks.formCollapsibleHint") }}
+              </p>
+            </div>
+            <ChevronDown
+              class="size-5 shrink-0 text-white/70 transition-transform duration-200"
+              :class="open ? 'rotate-180' : ''"
+            />
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CardContent class="border-t border-transparent px-6 pb-6 pt-4">
+              <TasksFormBody
+                v-model:title="title"
+                v-model:description="description"
+                v-model:category="category"
+                v-model:video-id="videoId"
+                :video-options="videoOptions"
+                :submit-disabled="!title.trim() || createMut.isPending.value"
+                @submit="createMut.mutate()"
+              />
+            </CardContent>
+          </CollapsibleContent>
+        </template>
+      </Collapsible>
+      <template v-else>
+        <CardHeader>
+          <CardTitle>{{ t("tasks.formTitle") }}</CardTitle>
+          <CardDescription class="text-white/60">
+            {{ t("tasks.formHint") }}
+          </CardDescription>
+        </CardHeader>
+        <CardContent class="space-y-4">
+          <TasksFormBody
+            v-model:title="title"
+            v-model:description="description"
+            v-model:category="category"
+            v-model:video-id="videoId"
+            :video-options="videoOptions"
+            :submit-disabled="!title.trim() || createMut.isPending.value"
+            @submit="createMut.mutate()"
+          />
+        </CardContent>
+      </template>
     </Card>
 
     <div class="min-w-0 flex-1 space-y-4">

@@ -138,6 +138,7 @@ export default {
     pageIntro:
       "Tasks here track which catalog titles you plan to watch. Pick “Watch movie”, choose the title, then open streaming from the button when you watch it. “General” is a note with no movie linked.",
     formTitle: "New list item",
+    formCollapsibleHint: "Open form to add a task",
     formHint:
       "Use “Watch movie” for a catalog-linked goal; “General” for notes without a movie.",
     title: "Title",
