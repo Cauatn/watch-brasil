@@ -1,62 +1,30 @@
-import type { PublicUser } from "@/features/auth/types/auth";
 import { api } from "@/lib/api";
+import type {
+  CatalogVideoDetail,
+  CreateVideoPayload,
+  ListVideosParams,
+  UpdateVideoPayload,
+  VideoListResponse,
+} from "@/features/catalog/types/video";
 
-export type VideoStatus = "processing" | "ready" | "error";
-
-export type CatalogVideo = {
-  id: string;
-  title: string;
-  description: string | null;
-  url: string;
-  coverUrl: string;
-  mimeType: string;
-  sizeBytes: number;
-  status: VideoStatus;
-  uploadedById: string;
-  createdAt: string;
-};
-
-export type VideoListResponse = {
-  data: CatalogVideo[];
-  total: number;
-  page: number;
-  limit: number;
-};
-
-export type CreateVideoPayload = {
-  title: string;
-  url: string;
-  coverUrl: string;
-  description?: string;
-};
-
-export type UpdateVideoPayload = {
-  title: string;
-  url?: string;
-  coverUrl?: string;
-  description?: string;
-};
-
-export type CatalogVideoDetail = CatalogVideo & {
-  uploadedBy: PublicUser | null;
-};
-
-export type ListVideosParams = {
-  page?: number;
-  limit?: number;
-  status?: VideoStatus;
-  uploadedBy?: string;
-};
+export type {
+  CatalogVideo,
+  CatalogVideoDetail,
+  CreateVideoPayload,
+  ListVideosParams,
+  UpdateVideoPayload,
+  VideoListResponse,
+  VideoStatus,
+} from "@/features/catalog/types/video";
 
 export async function listVideos(params: ListVideosParams = {}) {
-  const page = params.page ?? 1;
-  const limit = params.limit ?? 60;
   const { data } = await api.get<VideoListResponse>("/videos", {
     params: {
-      page,
-      limit,
-      ...(params.status ? { status: params.status } : {}),
-      ...(params.uploadedBy ? { uploadedBy: params.uploadedBy } : {}),
+      page: params.page ?? 1,
+      limit: params.limit ?? 60,
+      status: params.status,
+      uploadedBy: params.uploadedBy,
+      search: params.search?.trim() || undefined,
     },
   });
   return data;
