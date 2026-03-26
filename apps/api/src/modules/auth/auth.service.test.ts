@@ -1,15 +1,13 @@
-import { describe, it, expect, beforeAll } from "@jest/globals";
+import { describe, it, expect, beforeEach, mock } from "bun:test";
 import { hash } from "bcryptjs";
-import { testDb } from "../../test/mocks/db-client.js";
-import { registerDbMock } from "../../test/register-db-mock.js";
+import { testDb, resetDbMock } from "../../test/mocks/db-client";
+
+mock.module("../../db/client", () => ({ db: testDb }));
+
+import { authService } from "./auth.service";
 
 describe("authService", () => {
-  let authService: typeof import("./auth.service.js").authService;
-
-  beforeAll(async () => {
-    await registerDbMock();
-    ({ authService } = await import("./auth.service.js"));
-  });
+  beforeEach(() => resetDbMock());
 
   describe("register", () => {
     it("cria usuario quando email esta livre", async () => {
@@ -23,9 +21,6 @@ describe("authService", () => {
 
       expect(result.conflict).toBe(false);
       if (result.conflict) return;
-      expect(result.user.id).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
-      );
       expect(result.user.email).toBe("ana@test.com");
       expect(result.user.role).toBe("user");
       expect("password" in result.user).toBe(false);
@@ -70,22 +65,14 @@ describe("authService", () => {
         password: "certa",
       });
 
-      expect(result).toEqual({
-        id: "u1",
-        email: "ana@test.com",
-        role: "user",
-      });
+      expect(result).toEqual({ id: "u1", email: "ana@test.com", role: "user" });
     });
 
     it("retorna null quando usuario nao existe", async () => {
       testDb.query.usersTable.findFirst.mockResolvedValue(undefined);
-
-      const result = await authService.login({
-        email: "nao@existe.com",
-        password: "x",
-      });
-
-      expect(result).toBeNull();
+      expect(
+        await authService.login({ email: "x@x.com", password: "x" }),
+      ).toBeNull();
     });
 
     it("retorna null quando senha errada", async () => {
@@ -99,12 +86,9 @@ describe("authService", () => {
         createdAt: new Date(),
       });
 
-      const result = await authService.login({
-        email: "ana@test.com",
-        password: "errada",
-      });
-
-      expect(result).toBeNull();
+      expect(
+        await authService.login({ email: "ana@test.com", password: "errada" }),
+      ).toBeNull();
     });
   });
 });

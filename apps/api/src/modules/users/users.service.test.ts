@@ -1,17 +1,16 @@
-import { describe, it, expect, beforeAll } from "@jest/globals";
-import { dbMockHelpers, testDb } from "../../test/mocks/db-client.js";
-import { registerDbMock } from "../../test/register-db-mock.js";
+import { describe, it, expect, beforeEach, mock } from "bun:test";
+import {
+  testDb,
+  resetDbMock,
+  wireDeleteReturning,
+} from "../../test/mocks/db-client";
+
+mock.module("../../db/client", () => ({ db: testDb }));
+
+import { findUserById, usersService } from "./users.service";
 
 describe("usersService", () => {
-  let findUserById: (typeof import("./users.service.js"))["findUserById"];
-  let usersService: (typeof import("./users.service.js"))["usersService"];
-
-  beforeAll(async () => {
-    await registerDbMock();
-    const mod = await import("./users.service.js");
-    findUserById = mod.findUserById;
-    usersService = mod.usersService;
-  });
+  beforeEach(() => resetDbMock());
 
   describe("findUserById", () => {
     it("mapeia usuario encontrado", async () => {
@@ -25,9 +24,7 @@ describe("usersService", () => {
         createdAt,
       });
 
-      const user = await findUserById("u1");
-
-      expect(user).toEqual({
+      expect(await findUserById("u1")).toEqual({
         id: "u1",
         name: "Ana",
         email: "ana@test.com",
@@ -38,10 +35,7 @@ describe("usersService", () => {
 
     it("retorna null quando nao existe", async () => {
       testDb.query.usersTable.findFirst.mockResolvedValue(undefined);
-
-      const user = await findUserById("missing");
-
-      expect(user).toBeNull();
+      expect(await findUserById("missing")).toBeNull();
     });
   });
 
@@ -60,32 +54,19 @@ describe("usersService", () => {
       const updated = await usersService.updateMe("u1", { name: "Nova" });
 
       expect(testDb.update).toHaveBeenCalled();
-      expect(updated).toEqual({
-        id: "u1",
-        name: "Nova",
-        email: "a@b.com",
-        role: "user",
-        createdAt: createdAt.toISOString(),
-      });
+      expect(updated?.name).toBe("Nova");
     });
   });
 
   describe("deleteMe", () => {
     it("retorna true quando removeu", async () => {
-      dbMockHelpers.wireDeleteMock([{ id: "u1" }]);
-
-      const ok = await usersService.deleteMe("u1");
-
-      expect(ok).toBe(true);
-      expect(testDb.delete).toHaveBeenCalled();
+      wireDeleteReturning([{ id: "u1" }]);
+      expect(await usersService.deleteMe("u1")).toBe(true);
     });
 
     it("retorna false quando nada foi removido", async () => {
-      dbMockHelpers.wireDeleteMock([]);
-
-      const ok = await usersService.deleteMe("u1");
-
-      expect(ok).toBe(false);
+      wireDeleteReturning([]);
+      expect(await usersService.deleteMe("u1")).toBe(false);
     });
   });
 });

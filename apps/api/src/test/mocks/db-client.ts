@@ -1,93 +1,82 @@
-import { jest } from "@jest/globals";
-
-type AsyncFnMock = jest.Mock<(...args: unknown[]) => Promise<unknown>>;
-
-type SyncFnMock = jest.Mock<(...args: unknown[]) => unknown>;
-
-function asyncMock(): AsyncFnMock {
-  return jest.fn<(...args: unknown[]) => Promise<unknown>>();
-}
-
-function chainMock(): SyncFnMock {
-  return jest.fn<(...args: unknown[]) => unknown>();
-}
-
-function deleteWhereChain(returningRows: unknown[] = []) {
-  const base = Promise.resolve(undefined);
-  const ret = jest.fn<(...args: unknown[]) => Promise<unknown>>();
-  ret.mockResolvedValue(returningRows);
-  return Object.assign(base, { returning: ret });
-}
+import { mock } from "bun:test";
 
 export const testDb = {
   query: {
-    usersTable: { findFirst: asyncMock() },
-    videosTable: { findFirst: asyncMock(), findMany: asyncMock() },
-    commentsTable: { findFirst: asyncMock(), findMany: asyncMock() },
+    usersTable: { findFirst: mock() },
+    videosTable: { findFirst: mock(), findMany: mock() },
+    commentsTable: { findFirst: mock(), findMany: mock() },
   },
-  insert: chainMock(),
-  update: chainMock(),
-  delete: chainMock(),
-  select: chainMock(),
+  insert: mock(),
+  update: mock(),
+  delete: mock(),
+  select: mock(),
 };
 
-function wireInsertMock() {
+function wireChains() {
   testDb.insert.mockImplementation(() => ({
-    values: jest
-      .fn<(...args: unknown[]) => Promise<unknown>>()
-      .mockResolvedValue(undefined),
+    values: mock(() => Promise.resolve()),
   }));
-}
 
-function wireUpdateMock() {
   testDb.update.mockImplementation(() => ({
-    set: jest.fn().mockReturnValue({
-      where: jest
-        .fn<(...args: unknown[]) => Promise<unknown>>()
-        .mockResolvedValue(undefined),
-    }),
+    set: mock(() => ({
+      where: mock(() => Promise.resolve()),
+    })),
   }));
-}
 
-function wireDeleteMock(returningDefault: unknown[] = []) {
   testDb.delete.mockImplementation(() => ({
-    where: jest.fn().mockImplementation(() => deleteWhereChain(returningDefault)),
-  }));
-}
-
-function wireSelectMock(totalValue = 0) {
-  testDb.select.mockImplementation(() => ({
-    from: jest.fn().mockReturnValue({
-      where: jest
-        .fn<(...args: unknown[]) => Promise<unknown>>()
-        .mockResolvedValue([{ value: String(totalValue) }]),
+    where: mock(() => {
+      const p = Promise.resolve();
+      return Object.assign(p, {
+        returning: mock(() => Promise.resolve([])),
+      });
     }),
+  }));
+
+  testDb.select.mockImplementation(() => ({
+    from: mock(() => ({
+      where: mock(() => Promise.resolve([{ value: "0" }])),
+    })),
   }));
 }
 
 export function resetDbMock() {
-  jest.clearAllMocks();
-  wireInsertMock();
-  wireUpdateMock();
-  wireDeleteMock([]);
-  wireSelectMock(0);
+  for (const table of Object.values(testDb.query)) {
+    for (const fn of Object.values(table)) fn.mockReset();
+  }
+  testDb.insert.mockReset();
+  testDb.update.mockReset();
+  testDb.delete.mockReset();
+  testDb.select.mockReset();
+  wireChains();
 }
 
-export const dbMockHelpers = {
-  deleteWhereChain,
-  wireUpdateReturningMock(rows: unknown[]) {
-    testDb.update.mockImplementation(() => ({
-      set: jest.fn().mockReturnValue({
-        where: jest.fn().mockReturnValue({
-          returning: jest
-            .fn<(...args: unknown[]) => Promise<unknown>>()
-            .mockResolvedValue(rows),
-        }),
-      }),
-    }));
-  },
-  wireDeleteMock,
-  wireSelectMock,
-};
+export function wireUpdateReturning(rows: unknown[]) {
+  testDb.update.mockImplementation(() => ({
+    set: mock(() => ({
+      where: mock(() => ({
+        returning: mock(() => Promise.resolve(rows)),
+      })),
+    })),
+  }));
+}
 
-resetDbMock();
+export function wireDeleteReturning(rows: unknown[]) {
+  testDb.delete.mockImplementation(() => ({
+    where: mock(() => {
+      const p = Promise.resolve();
+      return Object.assign(p, {
+        returning: mock(() => Promise.resolve(rows)),
+      });
+    }),
+  }));
+}
+
+export function wireSelectTotal(total: number) {
+  testDb.select.mockImplementation(() => ({
+    from: mock(() => ({
+      where: mock(() => Promise.resolve([{ value: String(total) }])),
+    })),
+  }));
+}
+
+wireChains();
