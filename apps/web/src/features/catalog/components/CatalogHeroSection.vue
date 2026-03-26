@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { Button } from "@/components/ui/button"
 import type { CatalogVideo } from "@/features/catalog/services/video"
-import { Play } from "lucide-vue-next"
+import { useCreateWatchTask } from "@/features/tasks/composables/use-create-watch-task"
+import { ListPlus, Play } from "lucide-vue-next"
 import { useI18n } from "vue-i18n"
 import { useRouter } from "vue-router"
 
 const { t } = useI18n()
 const router = useRouter()
+const { addWatchTask, pendingVideoId } = useCreateWatchTask()
 
 defineProps<{
   featured: CatalogVideo | null
@@ -61,6 +63,17 @@ function openWatch(v: CatalogVideo) {
             <Play class="size-4 fill-current" />
             {{ t("catalog.watchNow") }}
           </Button>
+          <Button
+            type="button"
+            variant="outline"
+            class="rounded-full border-white/30 bg-black/40 text-white hover:bg-white/10"
+            :disabled="pendingVideoId === featured.id"
+            :aria-label="t('catalog.watchLater')"
+            @click="addWatchTask(featured)"
+          >
+            <ListPlus class="size-4" />
+            {{ t("catalog.watchLater") }}
+          </Button>
         </div>
       </div>
     </div>
@@ -84,17 +97,27 @@ function openWatch(v: CatalogVideo) {
           :alt="spotlight.title"
           class="aspect-[3/4] w-full rounded-xl object-cover"
         >
-        <div class="mt-3">
+        <div class="mt-3 space-y-2">
           <h3 class="font-semibold text-white">
             {{ spotlight.title }}
           </h3>
           <Button
             type="button"
             variant="outline"
-            class="mt-3 w-full border-white/20 bg-transparent text-white hover:bg-white/10"
+            class="w-full border-white/20 bg-transparent text-white hover:bg-white/10"
             @click="openWatch(spotlight)"
           >
             {{ t("catalog.watch") }}
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            class="w-full bg-white/10 text-white hover:bg-white/15"
+            :disabled="pendingVideoId === spotlight.id"
+            @click="addWatchTask(spotlight)"
+          >
+            <ListPlus class="mr-2 size-4" />
+            {{ t("catalog.watchLater") }}
           </Button>
         </div>
       </div>

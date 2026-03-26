@@ -19,6 +19,7 @@ export default {
     featured: "Em destaque",
     movieOfDay: "Filme do dia",
     watchNow: "Assistir agora",
+    watchLater: "Na minha lista",
     watch: "Assistir",
     noFeatured: "Nenhum filme em destaque",
     recommended: "Recomendados para você",
@@ -166,6 +167,9 @@ export default {
     updateError: "Não foi possível atualizar a tarefa",
     deleted: "Tarefa removida",
     deleteError: "Não foi possível excluir a tarefa",
+    addedFromCatalog: "Filme adicionado à sua lista",
+    addFromCatalogError:
+      "Não foi possível adicionar à lista. Confira se a API e o banco estão atualizados (tabela tasks).",
   },
   admin: {
     dashboardTitle: "Painel do administrador",
@@ -183,5 +187,7 @@ export default {
     watchlistHint:
       "Tarefas do tipo “filme” que ainda não foram marcadas como concluídas.",
     newUsers: "Novos usuários (7 dias)",
+    forbidden: "Sua conta não tem permissão de administrador.",
+    unauthorized: "Sessão expirada ou inválida. Entre de novo.",
   },
 } as const;

@@ -19,6 +19,7 @@ export default {
     featured: "Featured",
     movieOfDay: "Movie of the day",
     watchNow: "Watch now",
+    watchLater: "Add to my list",
     watch: "Watch",
     noFeatured: "No featured movie",
     recommended: "Recommended for you",
@@ -166,6 +167,9 @@ export default {
     updateError: "Could not update task",
     deleted: "Task removed",
     deleteError: "Could not delete task",
+    addedFromCatalog: "Added to your list",
+    addFromCatalogError:
+      "Could not add to list. Ensure the API database has the tasks table (run db:push).",
   },
   admin: {
     dashboardTitle: "Admin dashboard",
@@ -183,5 +187,7 @@ export default {
     watchlistHint:
       "Movie-type tasks that are not marked done yet.",
     newUsers: "New users (7 days)",
+    forbidden: "Your account is not an administrator.",
+    unauthorized: "Session expired or invalid. Sign in again.",
   },
 } as const;

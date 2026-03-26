@@ -12,6 +12,8 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import CatalogShell from "@/features/catalog/components/CatalogShell.vue";
 import { useAdminReportsQuery } from "@/features/admin/composables/use-admin-reports-query";
 import { ArrowLeft, LayoutDashboard } from "lucide-vue-next";
+import axios from "axios";
+import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 
@@ -19,6 +21,22 @@ const router = useRouter();
 const { t } = useI18n();
 
 const { data, isPending, isError, error, refetch } = useAdminReportsQuery();
+
+const errorMessage = computed(() => {
+  const e = error.value;
+  if (axios.isAxiosError(e)) {
+    const status = e.response?.status;
+    if (status === 403) return t("admin.forbidden");
+    if (status === 401) return t("admin.unauthorized");
+    const msg = e.response?.data && typeof e.response.data === "object"
+      && "message" in e.response.data
+      && typeof (e.response.data as { message: unknown }).message === "string"
+      ? (e.response.data as { message: string }).message
+      : null;
+    if (msg) return msg;
+  }
+  return e instanceof Error ? e.message : String(e ?? "");
+});
 </script>
 
 <template>
@@ -61,7 +79,7 @@ const { data, isPending, isError, error, refetch } = useAdminReportsQuery();
         class="space-y-3 rounded-xl border border-red-500/30 bg-red-500/10 p-6 text-white"
       >
         <p>{{ t("admin.loadError") }}</p>
-        <p class="text-sm opacity-80">{{ String(error) }}</p>
+        <p class="text-sm opacity-80">{{ errorMessage }}</p>
         <Button variant="secondary" @click="() => refetch()">
           {{ t("catalog.retry") }}
         </Button>

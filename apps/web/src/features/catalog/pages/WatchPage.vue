@@ -2,18 +2,20 @@
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, ExternalLink } from "lucide-vue-next";
+import { ArrowLeft, ExternalLink, ListPlus } from "lucide-vue-next";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 import CatalogShell from "../components/CatalogShell.vue";
 import LocaleSwitcher from "@/components/LocaleSwitcher.vue";
+import { useCreateWatchTask } from "@/features/tasks/composables/use-create-watch-task";
 import VideoCommentsSection from "../components/VideoCommentsSection.vue";
 import { useVideoQuery } from "../composables/use-video-query";
 
 const route = useRoute();
 const router = useRouter();
 const { t } = useI18n();
+const { addWatchTask, pendingVideoId } = useCreateWatchTask();
 
 const videoId = computed(() => route.params.id as string);
 
@@ -64,6 +66,18 @@ function openOriginal() {
       >
         <ExternalLink class="mr-2 size-4" />
         {{ t("watch.openOriginal") }}
+      </Button>
+      <Button
+        v-if="video"
+        type="button"
+        variant="outline"
+        size="sm"
+        class="hidden border-[#E50914]/50 bg-transparent text-[#E50914] hover:bg-[#E50914]/10 sm:inline-flex"
+        :disabled="pendingVideoId === video.id"
+        @click="addWatchTask(video)"
+      >
+        <ListPlus class="mr-2 size-4" />
+        {{ t("catalog.watchLater") }}
       </Button>
       <LocaleSwitcher />
     </header>
@@ -124,15 +138,27 @@ function openOriginal() {
           {{ video.description }}
         </p>
 
-        <Button
-          type="button"
-          variant="outline"
-          class="w-full border-white/20 bg-transparent text-white hover:bg-white/10 sm:hidden"
-          @click="openOriginal"
-        >
-          <ExternalLink class="mr-2 size-4" />
-          {{ t("watch.openOriginal") }}
-        </Button>
+        <div class="flex flex-col gap-2 sm:hidden">
+          <Button
+            type="button"
+            variant="outline"
+            class="w-full border-white/20 bg-transparent text-white hover:bg-white/10"
+            @click="openOriginal"
+          >
+            <ExternalLink class="mr-2 size-4" />
+            {{ t("watch.openOriginal") }}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            class="w-full border-[#E50914]/50 text-[#E50914] hover:bg-[#E50914]/10"
+            :disabled="pendingVideoId === video.id"
+            @click="addWatchTask(video)"
+          >
+            <ListPlus class="mr-2 size-4" />
+            {{ t("catalog.watchLater") }}
+          </Button>
+        </div>
 
         <VideoCommentsSection :video-id="videoId" />
       </div>
