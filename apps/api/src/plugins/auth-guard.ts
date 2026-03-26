@@ -1,7 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
 import { z } from "zod";
-import { usersRepository } from "../modules/users/users.repository.js";
+import { findUserById } from "../modules/users/users.service.js";
 import type { UserRole } from "../shared/types/index.js";
 import { sendError } from "../shared/utils/index.js";
 
@@ -44,7 +44,7 @@ export const authGuardPlugin = fp(async (fastify) => {
           });
         }
 
-        const user = await usersRepository.findById(payload.id);
+        const user = await findUserById(payload.id);
 
         if (!user) {
           return sendError(reply, {
