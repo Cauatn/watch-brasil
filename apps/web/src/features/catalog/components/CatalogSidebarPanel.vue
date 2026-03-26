@@ -17,6 +17,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useAuthStore } from "@/stores/auth.store"
+import { useQueryClient } from "@tanstack/vue-query"
 import {
   Clapperboard,
   Clock,
@@ -36,6 +37,7 @@ import { useRoute, useRouter } from "vue-router"
 const authStore = useAuthStore()
 const route = useRoute()
 const router = useRouter()
+const queryClient = useQueryClient()
 const { t } = useI18n()
 
 const initials = computed(() => {
@@ -50,6 +52,7 @@ const initials = computed(() => {
 
 function logout() {
   authStore.logout()
+  queryClient.clear()
   void router.push({ name: "Signin" })
 }
 </script>

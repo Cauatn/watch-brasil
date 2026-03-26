@@ -136,7 +136,10 @@ export const tasksService = {
     await db.update(tasksTable).set(patch).where(eq(tasksTable.id, input.taskId));
 
     const row = await db.query.tasksTable.findFirst({
-      where: eq(tasksTable.id, input.taskId),
+      where: and(
+        eq(tasksTable.id, input.taskId),
+        eq(tasksTable.userId, input.userId),
+      ),
     });
     if (!row) return { type: "not_found" as const };
     return {
@@ -151,7 +154,9 @@ export const tasksService = {
     });
     if (!existing) return { type: "not_found" as const };
 
-    await db.delete(tasksTable).where(eq(tasksTable.id, taskId));
+    await db
+      .delete(tasksTable)
+      .where(and(eq(tasksTable.id, taskId), eq(tasksTable.userId, userId)));
     return { type: "ok" as const };
   },
 };

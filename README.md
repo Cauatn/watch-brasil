@@ -11,15 +11,31 @@ cd watch-brasil
 yarn install
 cp apps/api/.env.example apps/api/.env
 cp apps/web/.env.example apps/web/.env
-docker compose up -d
+
+# infra (docker): banco + observabilidade
+docker compose up -d postgres jaeger otel-collector
+
+# backend local: schema + seed
+yarn workspace api db:push
 yarn workspace api db:seed
+
+# app local (turbo): API + frontend
 yarn dev
 ```
 
-1. `docker compose up -d` sobe **Postgres**, **API**, **Jaeger** e demais servicos do Compose.
-2. O entrypoint da API ja aplica o schema (`db:push`).
-3. `yarn workspace api db:seed` preenche usuarios e catalogo de demonstracao (o seed **apaga** videos e comentarios existentes antes de recriar o cenario).
-4. `yarn dev` sobe o **frontend** com Vite em **http://localhost:5173** (hot reload).
+1. `docker compose up -d postgres jaeger otel-collector` sobe so a infraestrutura (sem ocupar a API em container).
+2. `yarn workspace api db:push` e `yarn workspace api db:seed` preparam o banco para desenvolvimento local.
+3. `yarn dev` roda via Turbo os scripts `dev` de `apps/api` e `apps/web` (backend + frontend locais).
+
+URLs disponiveis nesse fluxo:
+
+- Frontend (Vite): http://localhost:5173
+- API local: http://localhost:3333
+- Swagger (OpenAPI): http://localhost:3333/docs
+- Jaeger UI: http://localhost:16686
+
+> [!NOTE]
+> Se voce subir a API pelo Compose (`docker compose up -d api`), nao rode `yarn dev` ao mesmo tempo, porque ambos usam a porta `3333` e gera `EADDRINUSE`. Nesse caso, use `yarn dev:web` para subir somente o frontend local.
 
 Na **primeira** execucao, `yarn install` e o build da imagem da API podem demorar alguns minutos (rede + monorepo). Execucoes seguintes ficam mais rapidas com cache do Docker e do Yarn.
 
