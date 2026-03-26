@@ -12,7 +12,10 @@ yarn install
 cp apps/api/.env.example apps/api/.env
 cp apps/web/.env.example apps/web/.env
 docker compose up -d --build
+yarn workspace api db:seed
 ```
+
+O entrypoint da API no Compose ja aplica o schema (`db:push`); o **seed** acima preenche usuarios e catalogo de demonstracao (o seed **apaga** videos e comentarios existentes antes de recriar o cenario de demo).
 
 Na **primeira** build, a etapa `RUN yarn install` da imagem `web` pode ficar varios minutos em `Resolving dependencies` sem parecer progresso; e normal (rede + monorepo). Builds seguintes ficam mais rapidas com cache do Docker.
 
@@ -158,7 +161,16 @@ VITE_API_URL=http://localhost:3333
 docker compose up -d
 ```
 
-#### 2) Rode frontend e backend
+#### 2) Schema e dados de demonstracao
+
+Com Postgres no ar e `apps/api/.env` configurado:
+
+```bash
+yarn workspace api db:push
+yarn workspace api db:seed
+```
+
+#### 3) Rode frontend e backend
 
 Na raiz do projeto:
 
