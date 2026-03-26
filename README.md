@@ -69,7 +69,7 @@ Referencia rapida do que o projeto cobre frente ao objetivo (tarefas, CRUD, rela
 ### Diferencas em relacao ao texto do enunciado
 
 - [x] **Testes unitarios** — implementei na API com **Jest** (`ts-jest`), mockando o cliente do banco.
-- [x] **AWS Lambda** — ponto de entrada em [`apps/api/src/lambda.ts`](apps/api/src/lambda.ts) (`@fastify/aws-lambda`); **nao** ha pipeline/IaC pronta — detalhes em `apps/api/README.md` (secao Lambda).
+- [x] **AWS Lambda** — handler em [`apps/api/src/lambda.ts`](apps/api/src/lambda.ts) (`@fastify/aws-lambda`), bundle via esbuild e template SAM (`apps/api/template.yaml`) para deploy com API Gateway — detalhes em `apps/api/README.md` (secao Lambda).
 
 > [!IMPORTANT]
 > **Documentacao e processo:** a API possui README dedicado em [`apps/api/README.md`](apps/api/README.md) (variaveis de ambiente, seed, exemplos de payload, Docker, testes e OpenAPI/Swagger). Este arquivo cobre o monorepo como um todo.
@@ -250,6 +250,15 @@ watch-brasil/
 | `yarn docker:up`   | Build sequencial de `api` e `web` + sobe toda a stack (seed automatico) |
 | `yarn docker:down` | Para e remove containers                                                |
 | `yarn docker:test` | Roda testes da API no container (perfil `test`)                         |
+
+### AWS Lambda
+
+| Comando              | Descricao                                                         |
+| -------------------- | ----------------------------------------------------------------- |
+| `yarn build:lambda`  | Bundle da API para Lambda via esbuild (`apps/api/dist/lambda/`)   |
+
+> [!NOTE]
+> Apos o build, use o **SAM CLI** para deploy: `cd apps/api && sam build && sam deploy --guided`. Detalhes completos na secao [AWS Lambda](apps/api/README.md#aws-lambda-serverless) do README da API.
 
 ### Backend (`apps/api`)
 

@@ -197,17 +197,18 @@ watch-brasil/
 
 ## Scripts disponíveis (`apps/api`)
 
-| Comando            | Descrição                                            |
-| ------------------ | ---------------------------------------------------- |
-| `yarn dev`         | API em modo desenvolvimento (watch)                  |
-| `yarn build`       | Compila TypeScript para `dist/`                      |
-| `yarn start`       | Sobe `node dist/server.js` (produção compilada)      |
-| `yarn check-types` | Verificação TypeScript                               |
-| `yarn test`        | Jest                                                 |
-| `yarn db:generate` | Gera migrações Drizzle                               |
-| `yarn db:push`     | Aplica schema no banco                               |
-| `yarn db:studio`   | Drizzle Studio                                       |
-| `yarn db:seed`     | **Reseta vídeos/comentários** e insere dados de demo |
+| Comando             | Descrição                                            |
+| ------------------- | ---------------------------------------------------- |
+| `yarn dev`          | API em modo desenvolvimento (watch)                  |
+| `yarn build`        | Compila TypeScript para `dist/`                      |
+| `yarn build:lambda` | Bundle Lambda via esbuild (`dist/lambda/index.mjs`)  |
+| `yarn start`        | Sobe `node dist/server.js` (produção compilada)      |
+| `yarn check-types`  | Verificação TypeScript                               |
+| `yarn test`         | Jest                                                 |
+| `yarn db:generate`  | Gera migrações Drizzle                               |
+| `yarn db:push`      | Aplica schema no banco                               |
+| `yarn db:studio`    | Drizzle Studio                                       |
+| `yarn db:seed`      | **Reseta vídeos/comentários** e insere dados de demo |
 
 ### Monorepo (raiz do repositório)
 
@@ -329,8 +330,78 @@ Use somente em ambientes de desenvolvimento.
 
 ## AWS Lambda (serverless)
 
-> [!NOTE]
-> Existe um handler em `src/lambda.ts` usando `@fastify/aws-lambda`, adequado para deploy em **AWS Lambda**. O repositório não inclui pipeline CDK/SAM/Serverless pronta; configure empacotamento, variáveis e API Gateway conforme sua conta AWS.
+A API pode ser deployada como uma unica funcao Lambda atras de um API Gateway (HTTP API).
+
+### Arquitetura
+
+```text
+Cliente -> API Gateway (HTTP API) -> Lambda (Fastify via @fastify/aws-lambda) -> RDS PostgreSQL
+```
+
+O handler em `src/lambda.ts` usa `@fastify/aws-lambda` para adaptar o Fastify ao runtime Lambda. Todas as rotas (auth, videos, comments, tasks, reports) funcionam identicamente ao modo local.
+
+### Pre-requisitos
+
+- **AWS CLI** configurada (`aws configure`)
+- **AWS SAM CLI** ([instalacao](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html))
+- Banco **PostgreSQL** acessivel pela Lambda (ex: RDS, Neon, Supabase)
+
+### Build do artefato
+
+```bash
+yarn workspace api build:lambda
+```
+
+Gera `apps/api/dist/lambda/index.mjs` — bundle unico com todas as dependencias (esbuild, ~8 MB).
+
+### Deploy com SAM
+
+Na pasta `apps/api`:
+
+```bash
+cd apps/api
+
+sam build
+
+sam deploy --guided \
+  --parameter-overrides \
+    DatabaseUrl="postgresql://user:pass@host:5432/watch_brasil" \
+    JwtSecret="sua-chave-secreta"
+```
+
+O `--guided` pede confirmacao de stack name, regiao, e cria um `samconfig.toml` para deploys futuros. Apos o primeiro, basta:
+
+```bash
+yarn workspace api build:lambda && cd apps/api && sam build && sam deploy
+```
+
+### Template SAM (`template.yaml`)
+
+O template define:
+
+| Recurso               | Detalhes                                                            |
+| --------------------- | ------------------------------------------------------------------- |
+| `WatchBrasilFunction` | Lambda Node.js 22.x, arm64, 512 MB, timeout 30s                     |
+| `ServerlessHttpApi`   | API Gateway HTTP API (criado automaticamente pelo evento `HttpApi`) |
+
+Parametros obrigatorios: `DatabaseUrl`, `JwtSecret`. OpenTelemetry desabilitado por padrao (`OtelEnabled=false`).
+
+### Outputs
+
+Apos o deploy, o SAM exibe a URL do API Gateway:
+
+```text
+ApiUrl: https://abc123.execute-api.us-east-1.amazonaws.com
+```
+
+Essa URL substitui `http://localhost:3333` no frontend (`VITE_API_URL`).
+
+### Observacoes
+
+- **Banco**: a Lambda precisa acessar o PostgreSQL pela rede. Use RDS na mesma VPC ou um Postgres gerenciado com endpoint publico (Neon, Supabase).
+- **Cold start**: o bundle inclui OpenTelemetry (desabilitado por padrao). Para cold starts mais rapidos, mantenha `OtelEnabled=false`.
+- **Swagger**: `/docs` funciona na Lambda, mas retorna HTML estatico do Swagger UI.
+- **Migracao de schema**: execute `yarn workspace api db:push` localmente apontando para o `DATABASE_URL` do RDS antes do deploy.
 
 ## Docker entrypoint (`apps/api`)
 

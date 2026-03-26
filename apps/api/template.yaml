@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Watch Brasil API — Fastify on AWS Lambda + API Gateway (HTTP API)
+
+Parameters:
+  DatabaseUrl:
+    Type: String
+    Description: PostgreSQL connection string (ex. postgresql://user:pass@host:5432/db)
+  JwtSecret:
+    Type: String
+    Description: Secret used to sign JWT tokens
+    NoEcho: true
+  OtelEnabled:
+    Type: String
+    Default: "false"
+    AllowedValues: ["true", "false"]
+    Description: Enable OpenTelemetry tracing
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: nodejs22.x
+    Environment:
+      Variables:
+        NODE_ENV: production
+
+Resources:
+  WatchBrasilFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      CodeUri: dist/lambda/
+      Architectures:
+        - arm64
+      Environment:
+        Variables:
+          DATABASE_URL:
+            Ref: DatabaseUrl
+          JWT_SECRET:
+            Ref: JwtSecret
+          OTEL_ENABLED:
+            Ref: OtelEnabled
+      Events:
+        ProxyAll:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+        Root:
+          Type: HttpApi
+          Properties:
+            Path: /
+            Method: ANY
+
+Outputs:
+  ApiUrl:
+    Description: HTTP API Gateway endpoint
+    Value:
+      Fn::Sub: "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+  FunctionArn:
+    Description: Lambda function ARN
+    Value:
+      Fn::GetAtt: [WatchBrasilFunction, Arn]

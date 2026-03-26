@@ -11,6 +11,7 @@
     "build:api": "turbo run build --filter=api",
     "build:web": "turbo run build --filter=web",
     "build:project": "yarn install",
+    "build:lambda": "yarn workspace api build:lambda",
     "test": "turbo run test --filter=api",
     "test:api": "turbo run test --filter=api",
     "lint": "turbo run lint",
