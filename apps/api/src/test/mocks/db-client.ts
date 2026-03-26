@@ -1,34 +1,50 @@
 import { jest } from "@jest/globals";
 
+type AsyncFnMock = jest.Mock<(...args: unknown[]) => Promise<unknown>>;
+
+type SyncFnMock = jest.Mock<(...args: unknown[]) => unknown>;
+
+function asyncMock(): AsyncFnMock {
+  return jest.fn<(...args: unknown[]) => Promise<unknown>>();
+}
+
+function chainMock(): SyncFnMock {
+  return jest.fn<(...args: unknown[]) => unknown>();
+}
+
 function deleteWhereChain(returningRows: unknown[] = []) {
   const base = Promise.resolve(undefined);
-  return Object.assign(base, {
-    returning: jest.fn().mockResolvedValue(returningRows),
-  });
+  const ret = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+  ret.mockResolvedValue(returningRows);
+  return Object.assign(base, { returning: ret });
 }
 
 export const testDb = {
   query: {
-    usersTable: { findFirst: jest.fn() },
-    videosTable: { findFirst: jest.fn(), findMany: jest.fn() },
-    commentsTable: { findFirst: jest.fn(), findMany: jest.fn() },
+    usersTable: { findFirst: asyncMock() },
+    videosTable: { findFirst: asyncMock(), findMany: asyncMock() },
+    commentsTable: { findFirst: asyncMock(), findMany: asyncMock() },
   },
-  insert: jest.fn(),
-  update: jest.fn(),
-  delete: jest.fn(),
-  select: jest.fn(),
+  insert: chainMock(),
+  update: chainMock(),
+  delete: chainMock(),
+  select: chainMock(),
 };
 
 function wireInsertMock() {
   testDb.insert.mockImplementation(() => ({
-    values: jest.fn().mockResolvedValue(undefined),
+    values: jest
+      .fn<(...args: unknown[]) => Promise<unknown>>()
+      .mockResolvedValue(undefined),
   }));
 }
 
 function wireUpdateMock() {
   testDb.update.mockImplementation(() => ({
     set: jest.fn().mockReturnValue({
-      where: jest.fn().mockResolvedValue(undefined),
+      where: jest
+        .fn<(...args: unknown[]) => Promise<unknown>>()
+        .mockResolvedValue(undefined),
     }),
   }));
 }
@@ -42,7 +58,9 @@ function wireDeleteMock(returningDefault: unknown[] = []) {
 function wireSelectMock(totalValue = 0) {
   testDb.select.mockImplementation(() => ({
     from: jest.fn().mockReturnValue({
-      where: jest.fn().mockResolvedValue([{ value: String(totalValue) }]),
+      where: jest
+        .fn<(...args: unknown[]) => Promise<unknown>>()
+        .mockResolvedValue([{ value: String(totalValue) }]),
     }),
   }));
 }
@@ -61,7 +79,9 @@ export const dbMockHelpers = {
     testDb.update.mockImplementation(() => ({
       set: jest.fn().mockReturnValue({
         where: jest.fn().mockReturnValue({
-          returning: jest.fn().mockResolvedValue(rows),
+          returning: jest
+            .fn<(...args: unknown[]) => Promise<unknown>>()
+            .mockResolvedValue(rows),
         }),
       }),
     }));
