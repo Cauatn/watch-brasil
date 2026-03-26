@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 FROM oven/bun:1 AS build
 
 WORKDIR /app
@@ -7,7 +9,8 @@ COPY apps/web ./apps/web
 COPY apps/api/package.json ./apps/api/package.json
 COPY packages ./packages
 
-RUN bun install
+RUN --mount=type=cache,target=/root/.bun/install/cache \
+    bun install
 
 WORKDIR /app/apps/web
 

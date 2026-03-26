@@ -4,14 +4,17 @@ Sistema full-stack para catalogo de videos com autenticacao JWT, comentarios, ta
 
 ## Subir a stack (comando rapido)
 
-Na **raiz** do repositorio (apos `git clone`):
+Na **raiz** do repositorio (apos `git clone`) — **nao** rode o Compose de dentro de `apps/api`; o `docker-compose.yml` e os contextos de build (`web` usa a raiz) assumem esse diretorio:
 
 ```bash
+cd watch-brasil
 bun install
 cp apps/api/.env.example apps/api/.env
 cp apps/web/.env.example apps/web/.env
-docker compose up -d
+docker compose up -d --build
 ```
+
+Na **primeira** build, a etapa `RUN bun install` da imagem `web` pode ficar varios minutos em `Resolving dependencies` sem parecer progresso; e normal (rede + monorepo). Builds seguintes ficam mais rapidas com cache do Docker.
 
 Isso sobe Postgres, API, web (Nginx) e dependencias do `docker-compose.yml`. Ajuste `apps/web/.env` se a API nao estiver em `http://localhost:3333`. Com o Compose, o front costuma ficar em **http://localhost:8080** (porta `WEB_PORT`). Para desenvolvimento so com Vite na maquina, veja [Como executar](#como-executar).
 

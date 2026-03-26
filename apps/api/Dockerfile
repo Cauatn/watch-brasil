@@ -1,4 +1,4 @@
-#!/usr/bin/env dockerfile
+# syntax=docker/dockerfile:1
 
 # Usa imagem oficial do Bun (Node + Bun preinstalado)
 FROM oven/bun:1 AS base
@@ -10,7 +10,8 @@ WORKDIR /app
 COPY package.json tsconfig.json drizzle.config.ts ./
 
 # Instala dependencias do backend
-RUN bun install
+RUN --mount=type=cache,target=/root/.bun/install/cache \
+    bun install
 
 # Copia o restante do codigo da API
 COPY . .
