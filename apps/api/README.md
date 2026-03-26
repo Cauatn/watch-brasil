@@ -23,7 +23,10 @@ O backend do **Watch Brasil** expõe autenticação JWT, perfil do usuário, CRU
 > **Dados simulados (`db:seed`).** O script `bun run db:seed` **apaga todos os vídeos e comentários** do banco e recria usuários, vídeos e comentários de demonstração (`src/db/seed.ts`). Use apenas em desenvolvimento. Cada execução redefine o catálogo para o cenário simulado.
 
 > [!NOTE]
-> **Testes:** os testes da API usam `bun:test` com mock do cliente Drizzle (`mock.module`); não é necessário PostgreSQL rodando para `bun test`.
+> **Testes:** os testes da API usam **`bun:test`** (runner do Bun), **não Jest**. Utilizam `mock.module` para substituir `db/client`; não é necessário PostgreSQL rodando para `bun test` ou `bun run test` na raiz do monorepo.
+
+> [!TIP]
+> Na raiz do repositório: `bun run test` (Turbo filtra o pacote `api`).
 
 ## Pré-requisitos
 
@@ -243,15 +246,19 @@ cd apps/api
 bun test
 ```
 
-Ou, a partir da raiz (se o Bun descobrir os arquivos `*.test.ts`):
+Na raiz do monorepo:
 
 ```bash
-bun test
+bun run test
 ```
 
-Os testes mockam `src/db/client` e não alteram o PostgreSQL real.
+> [!NOTE]
+> Suite **unitária** com mocks; o banco real não é usado durante os testes.
 
 ## Documentação da API
+
+> [!TIP]
+> A especificação segue o padrão **OpenAPI**, servida pelo Fastify Swagger — use `/docs` para contratos, exemplos e “try it out”.
 
 - **Swagger UI**: `http://localhost:3333/docs` (com a API no ar)
 
@@ -305,6 +312,11 @@ O comando `bun run db:seed`:
 - Insere novamente vídeos e comentários de exemplo
 
 Use somente em ambientes de desenvolvimento.
+
+## AWS Lambda (serverless)
+
+> [!NOTE]
+> Existe um handler em `src/lambda.ts` usando `@fastify/aws-lambda`, adequado para deploy em **AWS Lambda**. O repositório não inclui pipeline CDK/SAM/Serverless pronta; configure empacotamento, variáveis e API Gateway conforme sua conta AWS.
 
 ## Docker entrypoint (`apps/api`)
 

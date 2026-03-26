@@ -2,6 +2,18 @@
 
 Sistema full-stack para catalogo de videos com autenticacao JWT e comentarios.
 
+> [!IMPORTANT]
+> **Documentacao e processo:** a API possui README dedicado em [`apps/api/README.md`](apps/api/README.md) (variaveis de ambiente, seed, endpoints, Docker, testes e OpenAPI/Swagger). Este arquivo cobre o monorepo como um todo.
+
+> [!WARNING]
+> **Gerenciador de pacotes:** use **Bun** na raiz e nos apps (`bun install`, `bun run`, `bun test`). O monorepo declara `packageManager: bun@...`; evite npm/yarn/pnpm para nao divergir lockfile e scripts.
+
+> [!NOTE]
+> **Testes do frontend:** nao ha suite de testes automatizados no `apps/web`. O foco de testes esta na API (`bun:test` em `apps/api`, executavel com `bun run test` na raiz via Turbo).
+
+> [!NOTE]
+> **Testes da API (Jest vs Bun):** os testes sao escritos com o runner **Bun** (`bun:test`), nao com Jest. Comportamento equivalente a testes unitarios com mocks do cliente de banco; ver `apps/api/src/**/*.test.ts`.
+
 ## Sobre o projeto
 
 O **Watch Brasil** e um monorepo com frontend e backend separados:
@@ -24,6 +36,9 @@ O backend expoe API REST com:
 - **Backend**: Fastify + TypeScript + JWT + Zod
 - **Banco de dados**: PostgreSQL
 - **Containerizacao**: Docker + Docker Compose
+
+> [!TIP]
+> **OpenAPI:** com a API no ar, a documentacao interativa fica em `http://localhost:3333/docs` (Swagger UI).
 
 ## Pre-requisitos
 
@@ -69,6 +84,12 @@ Crie o arquivo `apps/web/.env`:
 VITE_API_URL=http://localhost:3333
 ```
 
+> [!IMPORTANT]
+> Sem `VITE_API_URL` apontando para a API em execucao, o frontend nao consegira fazer requisicoes corretamente (CORS e URL base).
+
+> [!WARNING]
+> **Seed de desenvolvimento (`apps/api`):** o comando `bun run db:seed` dentro de `apps/api` **apaga todos os videos e comentarios** e recria dados de demonstracao. Use apenas em ambiente de desenvolvimento.
+
 ## Como executar
 
 ### Opcao 1: Desenvolvimento local
@@ -102,6 +123,9 @@ bun run dev:fe
 ```
 
 Use `VITE_API_URL=http://localhost:3333` em `apps/web/.env`.
+
+> [!NOTE]
+> O `dev:fe` sobe a API via Docker Compose (inclui dependencias como Postgres e, conforme o compose, OpenTelemetry/Jaeger). A primeira subida pode levar mais tempo.
 
 ### Opcao 3: So a API (local)
 
@@ -168,6 +192,28 @@ watch-brasil/
 | `bun run test` | Testes Bun |
 | `bun run db:push` / `db:seed` / etc. | Drizzle |
 
+## Testes
+
+### API
+
+```bash
+bun run test
+```
+
+Ou, em `apps/api`:
+
+```bash
+cd apps/api && bun run test
+```
+
+> [!NOTE]
+> Os testes usam **Bun** (`bun:test`) e mock do modulo `db/client`; nao e obrigatorio ter PostgreSQL rodando para a suite passar.
+
+### Frontend
+
+> [!NOTE]
+> **Testes do frontend nao foram implementados.** Prioridade atual: funcionalidade da UI e cobertura de testes no backend.
+
 ## Docker
 
 O `docker-compose.yml` na raiz inclui PostgreSQL, API, frontend (Nginx), OpenTelemetry e Jaeger (veja o arquivo para portas).
@@ -181,6 +227,9 @@ bun run docker:down
 ```
 
 ## Documentacao da API
+
+> [!TIP]
+> A API expoe **OpenAPI** via Fastify Swagger; use o Swagger UI para experimentar rotas e esquemas.
 
 Swagger UI:
 
