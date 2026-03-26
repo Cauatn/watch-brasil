@@ -31,7 +31,7 @@ const { t } = useI18n();
     </SheetTrigger>
     <SheetContent
       side="right"
-      class="flex w-full max-w-full flex-col border-white/10 bg-[#121212] p-0 sm:max-w-xl"
+      class="flex w-full max-w-full flex-col border-white/10 bg-[#121212] p-0 sm:max-w-2xl"
     >
       <div class="flex max-h-[100dvh] flex-1 flex-col overflow-hidden">
         <SheetHeader
@@ -44,7 +44,7 @@ const { t } = useI18n();
             {{ t("tasks.pageIntro") }}
           </SheetDescription>
         </SheetHeader>
-        <div class="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6">
+        <div class="min-h-0 w-full flex-1 overflow-y-auto px-4 py-4 sm:px-6">
           <TasksPanelContent stacked />
         </div>
         <div class="border-t border-white/10 px-4 py-3 sm:px-6">

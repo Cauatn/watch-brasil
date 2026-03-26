@@ -102,16 +102,20 @@ function remove(id: string) {
 
 const rootClass = computed(() =>
   props.stacked
-    ? "flex flex-col gap-8"
+    ? "flex w-full flex-col gap-8"
     : "flex flex-1 flex-col gap-8 overflow-auto p-4 pb-16 md:flex-row md:p-8",
+);
+
+const formCardClass = computed(() =>
+  props.stacked
+    ? "w-full max-w-none shrink-0 border-white/10 bg-[#1a1a1a] text-white"
+    : "w-full shrink-0 border-white/10 bg-[#1a1a1a] text-white md:max-w-md",
 );
 </script>
 
 <template>
   <div :class="rootClass">
-    <Card
-      class="w-full shrink-0 border-white/10 bg-[#1a1a1a] text-white md:max-w-md"
-    >
+    <Card :class="formCardClass">
       <Collapsible
         v-if="props.stacked"
         :default-open="false"
@@ -169,7 +173,7 @@ const rootClass = computed(() =>
       </template>
     </Card>
 
-    <div class="min-w-0 flex-1 space-y-4">
+    <div class="min-w-0 w-full flex-1 space-y-4">
       <div class="flex flex-wrap items-center gap-3">
         <Label class="text-white/80">{{ t("tasks.filterStatus") }}</Label>
         <select
