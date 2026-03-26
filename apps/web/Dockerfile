@@ -7,7 +7,7 @@ COPY apps/web ./apps/web
 COPY apps/api/package.json ./apps/api/package.json
 COPY packages ./packages
 
-RUN bun install --frozen-lockfile
+RUN bun install
 
 WORKDIR /app/apps/web
 
