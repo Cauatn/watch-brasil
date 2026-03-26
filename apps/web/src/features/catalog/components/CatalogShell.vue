@@ -9,7 +9,7 @@ import CatalogSidebarPanel from "./CatalogSidebarPanel.vue"
 </script>
 
 <template>
-  <SidebarProvider :default-open="true">
+  <SidebarProvider :default-open="false">
     <Sidebar
       collapsible="icon"
       class="border-white/10 bg-[#0f0f0f] text-sidebar-foreground"
