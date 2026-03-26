@@ -108,6 +108,12 @@ function remove(id: string) {
       <LocaleSwitcher />
     </header>
 
+    <p
+      class="border-b border-white/10 bg-black/35 px-4 py-3 text-sm leading-relaxed text-white/70 md:px-6"
+    >
+      {{ t("tasks.pageIntro") }}
+    </p>
+
     <div
       class="flex flex-1 flex-col gap-8 overflow-auto p-4 pb-16 md:flex-row md:p-8"
     >

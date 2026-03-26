@@ -2,8 +2,8 @@ export default {
   sidebar: {
     home: "Home",
     addMovie: "Add movie",
-    adminDashboard: "Dashboard",
-    watchlist: "My watchlist",
+    adminDashboard: "Admin panel",
+    watchlist: "Movies to watch (list)",
     history: "History",
     support: "Support",
     settings: "Settings",
@@ -132,10 +132,12 @@ export default {
     },
   },
   tasks: {
-    pageTitle: "My list and tasks",
-    formTitle: "New task",
+    pageTitle: "Your movie watch list",
+    pageIntro:
+      "Tasks here track which catalog titles you plan to watch. Pick “Watch movie”, choose the title, then open streaming from the button when you watch it. “General” is a note with no movie linked.",
+    formTitle: "New list item",
     formHint:
-      "Create general goals or pick a catalog movie to watch later.",
+      "Use “Watch movie” for a catalog-linked goal; “General” for notes without a movie.",
     title: "Title",
     titlePh: "e.g. Watch movie X",
     description: "Details (optional)",
@@ -174,7 +176,7 @@ export default {
   admin: {
     dashboardTitle: "Admin dashboard",
     dashboardSubtitle:
-      "Overview of usage: users, catalog, comments, and tasks.",
+      "Only admins see this panel. Regular users browse the catalog and the “Movies to watch” list. Here: users, catalog, comments, and watch-movie tasks in aggregate.",
     loading: "Loading reports…",
     loadError: "Could not load reports.",
     metricUsers: "Users",

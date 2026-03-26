@@ -89,19 +89,6 @@ function logout() {
           <SidebarMenuItem v-if="authStore.isAdmin">
             <SidebarMenuButton
               as-child
-              :tooltip="t('sidebar.addMovie')"
-              :is-active="route.path === '/catalog/add'"
-              class="text-sidebar-foreground hover:bg-white/10 data-[active=true]:bg-white/15"
-            >
-              <RouterLink to="/catalog/add">
-                <PlusCircle />
-                <span>{{ t("sidebar.addMovie") }}</span>
-              </RouterLink>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem v-if="authStore.isAdmin">
-            <SidebarMenuButton
-              as-child
               :tooltip="t('sidebar.adminDashboard')"
               :is-active="route.path === '/admin/dashboard'"
               class="text-sidebar-foreground hover:bg-white/10 data-[active=true]:bg-white/15"
@@ -109,6 +96,19 @@ function logout() {
               <RouterLink to="/admin/dashboard">
                 <LayoutDashboard />
                 <span>{{ t("sidebar.adminDashboard") }}</span>
+              </RouterLink>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem v-if="authStore.isAdmin">
+            <SidebarMenuButton
+              as-child
+              :tooltip="t('sidebar.addMovie')"
+              :is-active="route.path === '/catalog/add'"
+              class="text-sidebar-foreground hover:bg-white/10 data-[active=true]:bg-white/15"
+            >
+              <RouterLink to="/catalog/add">
+                <PlusCircle />
+                <span>{{ t("sidebar.addMovie") }}</span>
               </RouterLink>
             </SidebarMenuButton>
           </SidebarMenuItem>

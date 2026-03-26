@@ -2,8 +2,8 @@ export default {
   sidebar: {
     home: "Início",
     addMovie: "Adicionar filme",
-    adminDashboard: "Painel",
-    watchlist: "Minha lista",
+    adminDashboard: "Painel admin",
+    watchlist: "Filmes para ver (lista)",
     history: "Histórico",
     support: "Suporte",
     settings: "Configurações",
@@ -132,10 +132,12 @@ export default {
     },
   },
   tasks: {
-    pageTitle: "Minha lista e tarefas",
-    formTitle: "Nova tarefa",
+    pageTitle: "Sua lista de filmes para assistir",
+    pageIntro:
+      "As tarefas aqui servem para lembrar quais filmes do catálogo você quer ver. Escolha o tipo “Assistir filme”, selecione o título e abra o streaming pelo botão quando for assistir. “Geral” é só um lembrete, sem filme ligado.",
+    formTitle: "Nova meta na lista",
     formHint:
-      "Crie metas gerais ou marque um filme do catálogo para assistir depois.",
+      "Use “Assistir filme” para uma meta ligada ao catálogo; “Geral” para anotações sem filme.",
     title: "Título",
     titlePh: "Ex.: Assistir filme X",
     description: "Detalhes (opcional)",
@@ -174,7 +176,7 @@ export default {
   admin: {
     dashboardTitle: "Painel do administrador",
     dashboardSubtitle:
-      "Visão geral de uso: usuários, conteúdo, comentários e tarefas.",
+      "Só administradores veem este painel. Usuários comuns usam o catálogo e a lista “Filmes para ver”. Aqui: usuários, catálogo, comentários e tarefas (metas de ver filme) em números.",
     loading: "Carregando relatórios…",
     loadError: "Não foi possível carregar os relatórios.",
     metricUsers: "Usuários",

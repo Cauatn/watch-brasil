@@ -2,6 +2,17 @@
 
 Sistema full-stack para catalogo de videos com autenticacao JWT e comentarios.
 
+## Acesso rapido (desenvolvimento)
+
+Depois de subir o Postgres, aplicar o schema (`bun run db:push` em `apps/api`) e rodar o seed (`bun run db:seed` em `apps/api`), use:
+
+| Papel | E-mail | Senha | O que enxerga no app |
+| :--- | :--- | :--- | :--- |
+| **Administrador** | `admin@example.com` | `admin1234` | **Painel** (resumo e relatorios), **cadastro de filmes** no catalogo, e o mesmo que o usuario: inicio, titulos, player, comentarios e **lista pessoal de filmes para assistir**. |
+| **Usuario** | `user@example.com` | `user12345` | Inicio, catalogo, player, comentarios e **lista pessoal de filmes para assistir**. Sem painel admin e sem tela de adicionar filme. |
+
+A **lista** e onde ficam suas tarefas de ver filmes: ao marcar *assistir filme*, o item fica ligado a um titulo do catalogo e voce abre o streaming a partir dali. Tarefas *gerais* sao lembretes sem filme associado.
+
 > [!IMPORTANT]
 > **Documentacao e processo:** a API possui README dedicado em [`apps/api/README.md`](apps/api/README.md) (variaveis de ambiente, seed, endpoints, Docker, testes e OpenAPI/Swagger). Este arquivo cobre o monorepo como um todo.
 

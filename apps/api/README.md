@@ -164,8 +164,10 @@ Fluxo padrão:
 | `admin@example.com` | `admin1234` | `admin` |
 | `user@example.com` | `user12345` | `user` |
 
+No **frontend**, o **admin** vê primeiro o item **Painel admin** (métricas), depois **Adicionar filme**, e compartilha com o usuário comum o catálogo, o player, comentários e a lista **Filmes para ver (lista)** — tarefas ligadas a filmes do catálogo (e lembretes gerais). O **user** não acessa painel nem cadastro de títulos.
+
 > [!NOTE]
-> Esses usuários existem **após** rodar o seed; o seed também recria vídeos e comentários de exemplo.
+> Esses usuários existem **após** rodar o seed; o seed também recria vídeos e comentários de exemplo. Detalhes de papéis e fluxo também estão em [`README.md`](../README.md) na raiz do monorepo.
 
 ## Estrutura do projeto (API)
 
