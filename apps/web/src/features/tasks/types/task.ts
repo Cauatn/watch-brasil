@@ -1,17 +1,3 @@
-export type Nullable<T> = T | null;
-
-export type UserRole = "admin" | "user";
-
-export type PublicUser = {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-  createdAt: string;
-};
-
-export type VideoStatus = "processing" | "ready" | "error";
-
 export type TaskStatus = "pending" | "in_progress" | "done";
 
 export type TaskCategory = "general" | "watch_movie";
@@ -22,7 +8,7 @@ export type TaskVideoRef = {
   coverUrl: string;
 };
 
-export type PublicTask = {
+export type TaskItem = {
   id: string;
   userId: string;
   title: string;
@@ -32,4 +18,20 @@ export type PublicTask = {
   video: TaskVideoRef | null;
   createdAt: string;
   updatedAt: string;
+};
+
+export type CreateTaskPayload = {
+  title: string;
+  description?: string;
+  status?: TaskStatus;
+  category?: TaskCategory;
+  videoId?: string | null;
+};
+
+export type UpdateTaskPayload = {
+  title?: string;
+  description?: string | null;
+  status?: TaskStatus;
+  category?: TaskCategory;
+  videoId?: string | null;
 };

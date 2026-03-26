@@ -47,10 +47,27 @@ export const commentsTable = pgTable("comments", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
 });
 
+export const tasksTable = pgTable("tasks", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => usersTable.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  description: text("description"),
+  status: text("status").notNull().default("pending"),
+  category: text("category").notNull().default("general"),
+  videoId: text("video_id").references(() => videosTable.id, {
+    onDelete: "set null",
+  }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
+});
+
 export const usersRelations = relations(usersTable, ({ many }) => ({
   sessions: many(sessionsTable),
   videos: many(videosTable),
   comments: many(commentsTable),
+  tasks: many(tasksTable),
 }));
 
 export const videosRelations = relations(videosTable, ({ one, many }) => ({
@@ -59,6 +76,7 @@ export const videosRelations = relations(videosTable, ({ one, many }) => ({
     references: [usersTable.id],
   }),
   comments: many(commentsTable),
+  tasks: many(tasksTable),
 }));
 
 export const commentsRelations = relations(commentsTable, ({ one }) => ({
@@ -69,6 +87,17 @@ export const commentsRelations = relations(commentsTable, ({ one }) => ({
   author: one(usersTable, {
     fields: [commentsTable.authorId],
     references: [usersTable.id],
+  }),
+}));
+
+export const tasksRelations = relations(tasksTable, ({ one }) => ({
+  user: one(usersTable, {
+    fields: [tasksTable.userId],
+    references: [usersTable.id],
+  }),
+  video: one(videosTable, {
+    fields: [tasksTable.videoId],
+    references: [videosTable.id],
   }),
 }));
 

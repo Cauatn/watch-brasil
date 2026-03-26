@@ -21,8 +21,9 @@ import {
   Clapperboard,
   Clock,
   Headphones,
-  Heart,
   Home,
+  LayoutDashboard,
+  ListTodo,
   LogOut,
   MoreVertical,
   PlusCircle,
@@ -98,14 +99,30 @@ function logout() {
               </RouterLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
+          <SidebarMenuItem v-if="authStore.isAdmin">
+            <SidebarMenuButton
+              as-child
+              :tooltip="t('sidebar.adminDashboard')"
+              :is-active="route.path === '/admin/dashboard'"
+              class="text-sidebar-foreground hover:bg-white/10 data-[active=true]:bg-white/15"
+            >
+              <RouterLink to="/admin/dashboard">
+                <LayoutDashboard />
+                <span>{{ t("sidebar.adminDashboard") }}</span>
+              </RouterLink>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
-              disabled
-              class="opacity-50"
-              :tooltip="t('sidebar.comingSoon')"
+              as-child
+              :tooltip="t('sidebar.watchlist')"
+              :is-active="route.path === '/tasks'"
+              class="text-sidebar-foreground hover:bg-white/10 data-[active=true]:bg-white/15"
             >
-              <Heart />
-              <span>{{ t("sidebar.watchlist") }}</span>
+              <RouterLink to="/tasks">
+                <ListTodo />
+                <span>{{ t("sidebar.watchlist") }}</span>
+              </RouterLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>

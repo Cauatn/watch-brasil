@@ -11,6 +11,8 @@ import {
 } from "fastify-type-provider-zod";
 import { authRoute } from "./modules/auth/auth.route.js";
 import { commentsRoute } from "./modules/comments/comments.route.js";
+import { reportsRoute } from "./modules/reports/reports.route.js";
+import { tasksRoute } from "./modules/tasks/tasks.route.js";
 import { usersRoute } from "./modules/users/users.route.js";
 import { videosRoute } from "./modules/videos/videos.route.js";
 import { authGuardPlugin } from "./plugins/auth-guard.js";
@@ -61,6 +63,8 @@ app.register(authRoute);
 app.register(usersRoute);
 app.register(videosRoute);
 app.register(commentsRoute);
+app.register(tasksRoute);
+app.register(reportsRoute);
 
 //Erros handling de schemas com zod
 app.setErrorHandler((error, request, reply) => {

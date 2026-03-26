@@ -5,7 +5,12 @@ import { eq } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 
 import { db } from "../db/client.js";
-import { commentsTable, usersTable, videosTable } from "../db/schema.js";
+import {
+  commentsTable,
+  tasksTable,
+  usersTable,
+  videosTable,
+} from "../db/schema.js";
 
 type UserRole = "admin" | "user";
 
@@ -119,8 +124,8 @@ async function upsertUser(input: {
 }
 
 async function resetVideosAndComments() {
-  // delete comments first to avoid FK constraint
   await db.delete(commentsTable);
+  await db.delete(tasksTable);
   await db.delete(videosTable);
 }
 
@@ -167,6 +172,48 @@ async function seed() {
       })),
     );
   }
+
+  const firstVideo = insertedVideos[0];
+  const secondVideo = insertedVideos[1];
+  const now = new Date();
+
+  await db.insert(tasksTable).values([
+    {
+      id: randomUUID(),
+      userId: user.id,
+      title: `Assistir: ${firstVideo?.title ?? "filme"}`,
+      description: "Meta de streaming ligada ao catalogo.",
+      status: "pending",
+      category: "watch_movie",
+      videoId: firstVideo?.id ?? null,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: randomUUID(),
+      userId: user.id,
+      title: "Revisar lista de recomendados",
+      description: "Tarefa geral de curadoria.",
+      status: "in_progress",
+      category: "general",
+      videoId: null,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: randomUUID(),
+      userId: admin.id,
+      title: secondVideo
+        ? `Ver trailer: ${secondVideo.title}`
+        : "Ver trailer em destaque",
+      description: "Tarefa admin — ver filme",
+      status: "pending",
+      category: "watch_movie",
+      videoId: secondVideo?.id ?? null,
+      createdAt: now,
+      updatedAt: now,
+    },
+  ]);
 }
 
 try {
