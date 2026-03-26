@@ -1,6 +1,68 @@
 # Watch Brasil
 
-Sistema full-stack para catalogo de videos com autenticacao JWT e comentarios.
+Sistema full-stack para catalogo de videos com autenticacao JWT, comentarios, tarefas e relatorios admin.
+
+> [!WARNING]
+> **Gerenciador de pacotes:** use **Bun** na raiz e nos apps (`bun install`, `bun run`, `bun test`). O monorepo declara `packageManager: bun@...`; evite npm/yarn/pnpm para nao divergir lockfile e scripts.
+
+## Endpoints da API (visao geral)
+
+**Base local:** `http://localhost:3333` — **OpenAPI / Swagger UI:** [`http://localhost:3333/docs`](http://localhost:3333/docs) (contratos, exemplos e “try it out” com a API no ar).
+
+### Sem JWT (publico)
+
+| Metodo | Caminho |
+|--------|---------|
+| `GET` | `/health` |
+| `POST` | `/auth/register` |
+| `POST` | `/auth/login` |
+| `POST` | `/auth/refresh` |
+
+### Com JWT (`Authorization: Bearer`)
+
+**Usuarios**
+
+| Metodo | Caminho |
+|--------|---------|
+| `GET` | `/users/me` |
+| `PUT` | `/users/me` |
+| `DELETE` | `/users/me` |
+
+**Videos** — `POST`, `PUT`, `DELETE` em `/videos` e `/videos/:id` exigem papel **admin**; `GET` lista/detalhe: qualquer usuario autenticado.
+
+| Metodo | Caminho |
+|--------|---------|
+| `GET` | `/videos` |
+| `POST` | `/videos` |
+| `GET` | `/videos/:id` |
+| `PUT` | `/videos/:id` |
+| `DELETE` | `/videos/:id` |
+
+**Comentarios**
+
+| Metodo | Caminho |
+|--------|---------|
+| `GET` | `/videos/:id/comments` |
+| `POST` | `/videos/:id/comments` |
+| `DELETE` | `/videos/:id/comments/:commentId` (autor do comentario) |
+
+**Tarefas** (lista pessoal do usuario autenticado)
+
+| Metodo | Caminho |
+|--------|---------|
+| `GET` | `/tasks` |
+| `POST` | `/tasks` |
+| `GET` | `/tasks/:id` |
+| `PATCH` | `/tasks/:id` |
+| `DELETE` | `/tasks/:id` |
+
+### Admin (`Bearer` + role `admin`)
+
+| Metodo | Caminho |
+|--------|---------|
+| `GET` | `/admin/reports/summary` |
+
+Detalhes de body, query, codigos e variaveis de ambiente: [`apps/api/README.md`](apps/api/README.md).
 
 ## Acesso rapido (desenvolvimento)
 
@@ -46,10 +108,7 @@ Referencia rapida do que o projeto cobre frente ao objetivo (tarefas, CRUD, rela
 - [x] **UI Material / Vuetify** — **nao** usados; em vez disso, padrao **shadcn-vue** com Tailwind (atende “Material UI ou ShadCN-Vue”).
 
 > [!IMPORTANT]
-> **Documentacao e processo:** a API possui README dedicado em [`apps/api/README.md`](apps/api/README.md) (variaveis de ambiente, seed, endpoints, Docker, testes e OpenAPI/Swagger). Este arquivo cobre o monorepo como um todo.
-
-> [!WARNING]
-> **Gerenciador de pacotes:** use **Bun** na raiz e nos apps (`bun install`, `bun run`, `bun test`). O monorepo declara `packageManager: bun@...`; evite npm/yarn/pnpm para nao divergir lockfile e scripts.
+> **Documentacao e processo:** a API possui README dedicado em [`apps/api/README.md`](apps/api/README.md) (variaveis de ambiente, seed, exemplos de payload, Docker, testes e OpenAPI/Swagger). Este arquivo cobre o monorepo como um todo.
 
 > [!NOTE]
 > **Testes do frontend:** nao ha suite de testes automatizados no `apps/web`. O foco de testes esta na API (`bun:test` em `apps/api`, executavel com `bun run test` na raiz via Turbo).
@@ -80,9 +139,6 @@ O backend expoe API REST com:
 - **Backend**: Fastify + TypeScript + JWT + Zod
 - **Banco de dados**: PostgreSQL
 - **Containerizacao**: Docker + Docker Compose
-
-> [!TIP]
-> **OpenAPI:** com a API no ar, a documentacao interativa fica em `http://localhost:3333/docs` (Swagger UI).
 
 ## Pre-requisitos
 

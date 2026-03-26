@@ -292,11 +292,23 @@ bun run test
 - `POST /videos/:id/comments` — Criar (Bearer)
 - `DELETE /videos/:id/comments/:commentId` — Remover (Bearer; autor)
 
+#### Tarefas
+
+- `GET /tasks` — Listar (Bearer; do usuário)
+- `POST /tasks` — Criar (Bearer)
+- `GET /tasks/:id` — Detalhe (Bearer)
+- `PATCH /tasks/:id` — Atualizar (Bearer)
+- `DELETE /tasks/:id` — Remover (Bearer)
+
+#### Admin
+
+- `GET /admin/reports/summary` — Resumo agregado (Bearer; **admin**)
+
 #### Utilitários
 
 - `GET /health` — Health check (público)
 
-**Nota:** exceto `/health`, `/docs`, `/auth/register`, `/auth/login` e `/auth/refresh`, as rotas de negócio exigem JWT válido; criação/edição/remoção de vídeos exige papel **admin**.
+**Nota:** exceto `/health`, `/docs`, `/auth/register`, `/auth/login` e `/auth/refresh`, as rotas de negócio exigem JWT válido; criação/edição/remoção de vídeos e o relatório admin exigem papel **admin** onde indicado acima.
 
 ## Configuração
 
