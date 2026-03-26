@@ -15,7 +15,17 @@ cp apps/web/.env.example apps/web/.env
 yarn docker:up
 ```
 
-O comando `yarn docker:up` builda `api` e `web`, sobe toda a stack (Postgres, API, frontend, Jaeger, OpenTelemetry) e roda o seed automaticamente.
+O comando `yarn docker:up` builda `api` e `web`, sobe toda a stack (Postgres, API, frontend, Jaeger, OpenTelemetry) e roda o seed automaticamente. Ou rode apenas,:
+
+```bash
+cd watch-brasil
+yarn install
+cp apps/api/.env.example apps/api/.env
+cp apps/web/.env.example apps/web/.env
+
+docker compose up -d postgres otel-collector jaeger
+yarn dev
+```
 
 URLs disponiveis nesse fluxo:
 
