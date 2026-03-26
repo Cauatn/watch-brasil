@@ -31,27 +31,22 @@ import { register } from "@/features/auth/services/auth";
 const { t, locale } = useI18n();
 const router = useRouter();
 
-const signupValidationSchema = computed(() =>
-  buildSignupValidationSchema({
-    nameRequired: t("auth.signup.validation.nameRequired"),
-    emailInvalid: t("auth.signup.validation.emailInvalid"),
-    passwordMin: t("auth.signup.validation.passwordMin"),
-    confirmRequired: t("auth.signup.validation.confirmRequired"),
-    passwordsMismatch: t("auth.signup.validation.passwordsMismatch"),
-  }),
-);
+const signupValidationSchema = computed(() => buildSignupValidationSchema(t));
 
 const onSubmit = (async (values) => {
   const { name, email, password } = values as SignupFormValues;
   try {
-    await register({ name, email, password });
-    toast.success(t("auth.signup.toastSuccess"));
+    await register({ name, email, password }).then(() =>
+      toast.success(t("auth.signup.toastSuccess")),
+    );
+
     await router.push("/signin");
   } catch (e) {
     if (isAxiosError(e) && e.response?.status === 409) {
       toast.error(t("auth.signup.toastConflict"));
       return;
     }
+
     toast.error(t("auth.signup.toastGeneric"));
   }
 }) as SubmissionHandler;

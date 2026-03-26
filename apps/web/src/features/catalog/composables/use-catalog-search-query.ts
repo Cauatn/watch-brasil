@@ -4,16 +4,16 @@ import { listVideos } from "@/features/catalog/services/video";
 
 const SEARCH_LIMIT = 100;
 
-export function useCatalogSearchQuery(q: MaybeRefOrGetter<string>) {
-  const term = computed(() => (toValue(q) ?? "").trim());
+export function useCatalogSearchQuery(search: MaybeRefOrGetter<string>) {
+  const term = computed(() => (toValue(search) ?? "").trim());
 
   return useQuery({
-    queryKey: ["videos", "search", term],
+    queryKey: ["videos", "catalog-search", term],
     queryFn: () =>
       listVideos({
         page: 1,
         limit: SEARCH_LIMIT,
-        q: term.value,
+        search: term.value,
       }),
     enabled: computed(() => term.value.length > 0),
   });

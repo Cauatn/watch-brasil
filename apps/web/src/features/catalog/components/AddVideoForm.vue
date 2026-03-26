@@ -2,6 +2,7 @@
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { isAxiosError } from "axios";
 import type { SubmissionHandler } from "vee-validate";
+import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
@@ -24,7 +25,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  createVideoValidationSchema,
+  buildCreateVideoValidationSchema,
   type CreateVideoFormValues,
 } from "../schemas/create-video.schema";
 import {
@@ -34,7 +35,11 @@ import {
 
 const router = useRouter();
 const queryClient = useQueryClient();
-const { t } = useI18n();
+const { t, locale } = useI18n();
+
+const createVideoValidationSchema = computed(() =>
+  buildCreateVideoValidationSchema(t),
+);
 
 const { mutateAsync, isPending } = useMutation({
   mutationFn: (payload: CreateVideoPayload) => createVideo(payload),
@@ -82,6 +87,7 @@ const onSubmit = (async (values) => {
     </CardHeader>
     <CardContent>
       <Form
+        :key="locale"
         v-slot="{ isSubmitting }"
         :validation-schema="createVideoValidationSchema"
         :initial-values="{ title: '', url: '', coverUrl: '', description: '' }"

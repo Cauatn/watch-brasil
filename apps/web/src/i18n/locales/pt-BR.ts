@@ -50,6 +50,11 @@ export default {
     success: "Filme adicionado ao catálogo",
     errorValidation: "Dados inválidos. Confira as URLs e o título.",
     errorGeneric: "Não foi possível cadastrar o filme",
+    validation: {
+      titleRequired: "Informe o título",
+      videoUrlInvalid: "URL do vídeo inválida",
+      coverUrlInvalid: "URL da capa inválida",
+    },
   },
   watch: {
     loadingTitle: "Assistir",

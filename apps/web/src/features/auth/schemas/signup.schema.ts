@@ -1,9 +1,6 @@
 import { toTypedSchema } from "@vee-validate/zod";
 import { z } from "zod";
-
-function fieldString(v: unknown) {
-  return v == null ? "" : v;
-}
+import type { ValidationTranslate } from "@/lib/validation-translate";
 
 export type SignupFormValues = {
   name: string;
@@ -12,38 +9,20 @@ export type SignupFormValues = {
   confirmPassword: string;
 };
 
-export type SignupSchemaMessages = {
-  nameRequired: string;
-  emailInvalid: string;
-  passwordMin: string;
-  confirmRequired: string;
-  passwordsMismatch: string;
-};
-
-export function buildSignupValidationSchema(messages: SignupSchemaMessages) {
+export function buildSignupValidationSchema(t: ValidationTranslate) {
   return toTypedSchema(
     z
       .object({
-        name: z.preprocess(
-          fieldString,
-          z.string().min(1, messages.nameRequired),
-        ),
-        email: z.preprocess(
-          fieldString,
-          z.string().email(messages.emailInvalid),
-        ),
-        password: z.preprocess(
-          fieldString,
-          z.string().min(8, messages.passwordMin),
-        ),
-        confirmPassword: z.preprocess(
-          fieldString,
-          z.string().min(1, messages.confirmRequired),
-        ),
+        name: z.string().min(1, t("auth.signup.validation.nameRequired")),
+        email: z.string().email(t("auth.signup.validation.emailInvalid")),
+        password: z.string().min(8, t("auth.signup.validation.passwordMin")),
+        confirmPassword: z
+          .string()
+          .min(1, t("auth.signup.validation.confirmRequired")),
       })
       .refine((data) => data.password === data.confirmPassword, {
         path: ["confirmPassword"],
-        message: messages.passwordsMismatch,
+        message: t("auth.signup.validation.passwordsMismatch"),
       }),
   );
 }

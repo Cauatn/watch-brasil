@@ -41,14 +41,13 @@ const authStore = useAuthStore();
 
 const loginValidationSchema = computed(() => buildLoginValidationSchema(t));
 
-function redirectAfterLogin() {
+const redirectAfterLogin = computed(() => {
   const raw = route.query.redirect;
+
   const path = typeof raw === "string" ? raw : null;
-  if (path?.startsWith("/") && !path.startsWith("//")) {
-    return path;
-  }
-  return "/";
-}
+
+  return path?.startsWith("/") && !path.startsWith("//") ? path : "/";
+});
 
 const onSubmit = (async (values) => {
   const { email, password } = values as LoginFormValues;
@@ -56,7 +55,7 @@ const onSubmit = (async (values) => {
     await authStore
       .login({ email, password })
       .then(() => toast.success(t("auth.login.toastSuccess")));
-    await router.push(redirectAfterLogin());
+    await router.push(redirectAfterLogin.value);
   } catch (e) {
     if (isAxiosError(e) && e.response?.status === 401) {
       toast.error(t("auth.login.toastInvalid"));

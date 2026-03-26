@@ -50,6 +50,11 @@ export default {
     success: "Movie added to the catalog",
     errorValidation: "Invalid data. Check URLs and title.",
     errorGeneric: "Could not add the movie",
+    validation: {
+      titleRequired: "Enter the title",
+      videoUrlInvalid: "Invalid video URL",
+      coverUrlInvalid: "Invalid cover image URL",
+    },
   },
   watch: {
     loadingTitle: "Watch",
