@@ -3,6 +3,7 @@ import {
   Sidebar,
   SidebarInset,
   SidebarProvider,
+  SidebarRail,
 } from "@/components/ui/sidebar"
 import CatalogSidebarPanel from "./CatalogSidebarPanel.vue"
 </script>
@@ -10,10 +11,11 @@ import CatalogSidebarPanel from "./CatalogSidebarPanel.vue"
 <template>
   <SidebarProvider :default-open="true">
     <Sidebar
-      collapsible="none"
+      collapsible="icon"
       class="border-white/10 bg-[#0f0f0f] text-sidebar-foreground"
     >
       <CatalogSidebarPanel />
+      <SidebarRail />
     </Sidebar>
     <SidebarInset class="flex min-h-svh flex-1 flex-col bg-[#121212]">
       <slot />

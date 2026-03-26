@@ -160,7 +160,7 @@ function logout() {
     </SidebarGroup>
   </SidebarContent>
 
-  <SidebarFooter class="border-t border-white/10 p-3 group-data-[collapsible=icon]:p-2">
+  <SidebarFooter class="mt-auto shrink-0 border-t border-white/10 p-3 group-data-[collapsible=icon]:p-2">
     <DropdownMenu>
       <DropdownMenuTrigger
         class="flex w-full items-center gap-3 rounded-xl bg-white/5 p-2 text-left hover:bg-white/10 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:p-0"
