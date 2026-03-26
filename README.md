@@ -2,6 +2,19 @@
 
 Sistema full-stack para catalogo de videos com autenticacao JWT, comentarios, tarefas e relatorios admin.
 
+## Subir a stack (comando rapido)
+
+Na **raiz** do repositorio (apos `git clone`):
+
+```bash
+bun install
+cp apps/api/.env.example apps/api/.env
+cp apps/web/.env.example apps/web/.env
+docker compose up -d
+```
+
+Isso sobe Postgres, API, web (Nginx) e dependencias do `docker-compose.yml`. Ajuste `apps/web/.env` se a API nao estiver em `http://localhost:3333`. Com o Compose, o front costuma ficar em **http://localhost:8080** (porta `WEB_PORT`). Para desenvolvimento so com Vite na maquina, veja [Como executar](#como-executar).
+
 > [!WARNING]
 > **Gerenciador de pacotes:** use **Bun** na raiz e nos apps (`bun install`, `bun run`, `bun test`). O monorepo declara `packageManager: bun@...`; evite npm/yarn/pnpm para nao divergir lockfile e scripts.
 
@@ -29,7 +42,7 @@ Referencia rapida do que o projeto cobre frente ao objetivo (tarefas, CRUD, rela
 - [x] **CRUD de tarefas** — `GET/POST/PATCH/DELETE /tasks`; na UI: pagina da lista + **sheet “Ver tarefas”** no header do catalogo.
 - [x] **Categorizar** — `general` ou `watch_movie` (ligada a um video do catalogo).
 - [x] **Acompanhar progresso** — estados `pending`, `in_progress`, `done`; painel admin com agregados (`/admin/reports/summary`).
-- [ ] **Colaboracao em tarefas** — *nao implementado como lista compartilhada*: cada usuario ve so suas tarefas. **Colaboracao leve** existe em **comentarios** no mesmo titulo, visiveis a todos logados.
+- [x] **Colaboracao em comentarios** — comentarios por filme (`GET`/`POST /videos/:id/comments`), visiveis a todos os usuarios autenticados no mesmo titulo do catalogo.
 
 ### Caso de uso (streaming)
 
@@ -37,7 +50,7 @@ Referencia rapida do que o projeto cobre frente ao objetivo (tarefas, CRUD, rela
 
 ### Requisitos tecnicos
 
-- [x] **Frontend Vue** — Vue 3 + Vite; **Tailwind**; componentes **shadcn-vue/Reka UI** (`apps/web/src/components/ui`); telas modulares em `features/*`.
+- [x] **Frontend Vue** — Vue 3 + Vite; **Tailwind**; **shadcn-vue** (`apps/web/src/components/ui`); telas modulares em `features/*`.
 - [x] **Backend Node REST** — **Fastify** (nomenclatura do enunciado: alternativa ao Express); varios CRUDs (tarefas, videos, comentarios, usuarios).
 - [x] **Postgres relacional** — Drizzle ORM; `bun run db:push` / migracoes em `apps/api/drizzle`.
 - [x] **Documentacao** — este README, [`apps/api/README.md`](apps/api/README.md), **OpenAPI/Swagger** em `http://localhost:3333/docs`.
@@ -49,7 +62,6 @@ Referencia rapida do que o projeto cobre frente ao objetivo (tarefas, CRUD, rela
 
 - [x] **Testes unitarios** — na API com **`bun:test`** e mocks do banco, **nao com Jest** (mesmo tipo de teste, runner diferente).
 - [x] **AWS Lambda** — ponto de entrada em [`apps/api/src/lambda.ts`](apps/api/src/lambda.ts) (`@fastify/aws-lambda`); **nao** ha pipeline/IaC pronta — detalhes em `apps/api/README.md` (secao Lambda).
-- [x] **UI Material / Vuetify** — **nao** usados; em vez disso, padrao **shadcn-vue** com Tailwind (atende “Material UI ou ShadCN-Vue”).
 
 > [!IMPORTANT]
 > **Documentacao e processo:** a API possui README dedicado em [`apps/api/README.md`](apps/api/README.md) (variaveis de ambiente, seed, exemplos de payload, Docker, testes e OpenAPI/Swagger). Este arquivo cobre o monorepo como um todo.
